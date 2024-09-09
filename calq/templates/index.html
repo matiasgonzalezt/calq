@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcularq</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Calculadora de Reacciones</h1>
+    <label for="longitud">Longitud de la viga (m):</label>
+    <input type="number" id="longitud" value="10" step="1.0">
+    <br>
+
+    <h3>Cargas Puntuales:</h3>
+    <div id="cargas_puntuales_container">
+            <div class="carga_puntual">
+            <label>Magnitud (kN):</label>
+            <input type="number" value="5" step="0.1">
+            <label>Posición (m):</label>
+            <input type="number" value="3" step="0.1">
+            <button class="eliminar" onclick="eliminarCarga(this)">Eliminar</button>
+        </div>
+    </div>
+    <button class="agregar" onclick="agregarCargaPuntual()">Agregar Carga Puntual</button>
+
+    <h3>Cargas Distribuidas:</h3>
+    <div id="cargas_distribuidas_container">
+        <!-- Carga distribuida inicial -->
+        <div class="carga_distribuida">
+            <label>Magnitud (kN/m):</label>
+            <input type="number" value="2" step="0.1">
+            <label>Desde (m):</label>
+            <input type="number" value="1" step="0.1">
+            <label>Hasta (m):</label>
+            <input type="number" value="4" step="0.1">
+            <button class="eliminar" onclick="eliminarCarga(this)">Eliminar</button>
+        </div>
+    </div>
+    <button class="agregar" onclick="agregarCargaDistribuida()">Agregar Carga Distribuida</button>
+
+    <br><br>
+    <button class="calcular" onclick="calcularReacciones()">Calcular Reacciones</button>
+    <br><br>
+
+    <img id="grafico_reacciones" alt="Gráfico de Reacciones" style="max-width: 100%; height: auto;">
+
+    <script>
+        // Función para agregar una carga puntual
+        function agregarCargaPuntual() {
+            const container = document.getElementById('cargas_puntuales_container');
+            const div = document.createElement('div');
+            div.classList.add('carga_puntual');
+            div.innerHTML = `
+                <label>Magnitud (kN):</label>
+                <input type="number" value="0" step="0.1">
+                <label>Posición (m):</label>
+                <input type="number" value="0" step="0.1">
+                <button onclick="eliminarCarga(this)">Eliminar</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // Función para agregar una carga distribuida
+        function agregarCargaDistribuida() {
+            const container = document.getElementById('cargas_distribuidas_container');
+            const div = document.createElement('div');
+            div.classList.add('carga_distribuida');
+            div.innerHTML = `
+                <label>Magnitud (kN/m):</label>
+                <input type="number" value="0" step="0.1">
+                <label>Desde (m):</label>
+                <input type="number" value="0" step="0.1">
+                <label>Hasta (m):</label>
+                <input type="number" value="0" step="0.1">
+                <button onclick="eliminarCarga(this)">Eliminar</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // Función para eliminar una carga puntual o distribuida
+        function eliminarCarga(button) {
+            button.parentElement.remove();
+        }
+
+        // Función para calcular las reacciones y enviar los datos al servidor
+        function calcularReacciones() {
+            const longitud = document.getElementById('longitud').value;
+
+            // Recopilar las cargas puntuales
+            const cargasPuntuales = [];
+            const posicionesCargas = [];
+            document.querySelectorAll('#cargas_puntuales_container .carga_puntual').forEach(function(carga) {
+                const magnitud = carga.querySelector('input[type="number"]').value;
+                const posicion = carga.querySelectorAll('input[type="number"]')[1].value;
+                cargasPuntuales.push(magnitud);
+                posicionesCargas.push(posicion);
+            });
+
+            // Recopilar las cargas distribuidas
+            const cargasDistribuidas = [];
+            const desdeDistribuidas = [];
+            const hastaDistribuidas = [];
+            document.querySelectorAll('#cargas_distribuidas_container .carga_distribuida').forEach(function(carga) {
+                const magnitud = carga.querySelector('input[type="number"]').value;
+                const desde = carga.querySelectorAll('input[type="number"]')[1].value;
+                const hasta = carga.querySelectorAll('input[type="number"]')[2].value;
+                cargasDistribuidas.push(magnitud);
+                desdeDistribuidas.push(desde);
+                hastaDistribuidas.push(hasta);
+            });
+
+            const data = {
+                longitud: longitud,
+                RA: 10,  // Ejemplo, se debería calcular según las condiciones
+                RB: 20,  // Ejemplo, se debería calcular según las condiciones
+                cargas_puntuales: cargasPuntuales,
+                posiciones_cargas: posicionesCargas,
+                cargas_distribuidas: cargasDistribuidas,
+                desde_distribuidas: desdeDistribuidas,
+                hasta_distribuidas: hastaDistribuidas
+            };
+
+            fetch('/grafico', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                document.getElementById('grafico_reacciones').src = url;
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+/* Estilo global */
+body {
+    font-family: 'Open Sans', Arial, sans-serif;
+}
+
+/* Estilo para centrar el texto en los inputs */
+input[type="number"] {
+    text-align: center; /* Centra el texto horizontalmente */
+}
+
+/* Estilos generales para todos los botones */
+button {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px; /* Tamaño de fuente para todos los botones */
+    padding: 5px 5px; /* Espaciado interno de los botones */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Estilo específico para el botón de eliminar */
+button.eliminar {
+    background-color: #BF1A2F;
+    color: white;
+    width: 100px; /* Ancho específico para el botón de eliminar */
+}
+
+/* Estilo para otros botones */
+button.agregar,
+button.calcular {
+    background-color: #1982C4;
+    color: white;
+    width: 200px; /* Ancho específico para los otros botones */
+}
+
+/* Estilo para el botón de calcular */
+button.calcular {
+    background-color: #018E42;
+    color: white;
+    width: 200px; /* Ancho específico para el botón de calcular */
+}
+
+/* Estilo para los inputs */
+input[type="number"] {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100px; /* Ancho de los inputs */
+}
+
+/* Tamaño del texto */
+h1 {
+    font-size: 2em;
+}
+
+h2 {
+    font-size: 1.5em;
+}
+
+p {
+    font-size: 1em;
+}
+
+button {
+    font-size: 1em;
+}
+
+/* Tamaño de las casillas de entrada para números */
+input[type="number"] {
+    width: 50px; /* Ancho reducido de la casilla de número */
+    height: 25px; /* Altura de la casilla de número */
+    font-size: 1em; /* Tamaño del texto dentro de la casilla */
+    padding: 1px; /* Espaciado interno */
+}
