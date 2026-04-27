@@ -1,647 +1,774 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --ink:#1a1a1a;--ink2:#444;--ink3:#888;--bg:#f9f8f5;--bg2:#fff;--bg3:#f0ede6;
-  --red:#c84b2f;--blue:#2f6fc8;--green:#2a7a4b;--amber:#c87a2f;
-  --border:#e0ddd4;
+  --ink:#18181b;--ink2:#52525b;--ink3:#a1a1aa;
+  --bg:#f4f4f5;--bg2:#ffffff;--bg3:#e4e4e7;
+  --ac:#2563eb;--ac-l:#dbeafe;--ac-d:#1d4ed8;
+  --gn:#16a34a;--gn-l:#dcfce7;
+  --rd:#dc2626;--rd-l:#fee2e2;
+  --am:#d97706;--am-l:#fef3c7;
+  --br:#d4d4d8;--sh:0 1px 3px rgba(0,0,0,.08);
+  --r:10px;--rs:7px;
 }
-@media(prefers-color-scheme:dark){
-  :root{--ink:#e8e5dc;--ink2:#b8b5ac;--ink3:#787570;--bg:#1a1917;--bg2:#221f1c;--bg3:#2a2722;--border:#3a3730}
+.dk{
+  --ink:#f4f4f5;--ink2:#a1a1aa;--ink3:#71717a;
+  --bg:#111113;--bg2:#18181b;--bg3:#27272a;
+  --ac:#3b82f6;--ac-l:#1e3a5f;--ac-d:#60a5fa;
+  --gn:#22c55e;--gn-l:#14532d;
+  --rd:#f87171;--rd-l:#450a0a;
+  --am:#fbbf24;--am-l:#451a03;
+  --br:#3f3f46;--sh:0 1px 3px rgba(0,0,0,.3);
 }
-body{font-family:'Archivo',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+body{font-family:'Archivo',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;font-size:16px;line-height:1.5;transition:background .2s,color .2s}
 
-/* HEADER */
-.header{display:flex;align-items:baseline;gap:.5rem;padding:.6rem 1.25rem;border-bottom:1.5px solid var(--border);background:var(--bg2);flex-shrink:0}
-.logo{font-size:1.3rem;font-weight:700;letter-spacing:-.02em;color:var(--ink)}
-.logo span{color:var(--red)}
-.logo-sub{font-size:.68rem;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase}
+.header{background:var(--bg2);border-bottom:1px solid var(--br);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-shrink:0}
+.logo{font-size:2rem;font-weight:700;letter-spacing:-.03em}
+.logo em{font-style:normal;color:var(--ac)}
+.logo-sub{font-size:1rem;font-weight:400;letter-spacing:0em;text-transform:lowercase;color:var(--ink3);margin-left:.5rem}
+.theme-btn{padding:.5rem .85rem;border-radius:var(--rs);border:1px solid var(--br);background:var(--bg3);color:var(--ink2);font-family:'Archivo',sans-serif;font-size:.8rem;font-weight:500;cursor:pointer;transition:all .15s}
+.theme-btn:hover{background:var(--br)}
 
-/* TABS */
-.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2);padding:0 1.25rem;flex-shrink:0}
-.tab{padding:.55rem 1rem;font-size:.8rem;font-weight:500;letter-spacing:.03em;cursor:pointer;border-bottom:2.5px solid transparent;color:var(--ink3);transition:all .15s;white-space:nowrap;font-family:'Archivo',sans-serif}
-.tab.active{color:var(--red);border-bottom-color:var(--red)}
+.disclaimer{background:var(--am-l);border-bottom:1px solid var(--am);padding:.6rem 1.5rem;display:flex;align-items:center;gap:.6rem;font-size:.8rem;color:var(--am);font-weight:500;flex-shrink:0}
+.disclaimer svg{flex-shrink:0}
+
+.tabs{background:var(--bg2);border-bottom:1px solid var(--br);padding:0 1.5rem;display:flex;flex-shrink:0}
+.tab{padding:.65rem 1.25rem;font-family:'Archivo',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;border-bottom:2.5px solid transparent;color:var(--ink3);transition:all .15s;white-space:nowrap}
+.tab.active{color:var(--ac);border-bottom-color:var(--ac)}
 .tab:hover:not(.active){color:var(--ink)}
 
-/* PANELS */
-.panel{display:none;flex:1}
-.panel.active{display:block}
+.panel{display:none}.panel.active{display:block}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:1.25rem;padding:1.25rem 1.5rem;align-items:start}
+@media(max-width:720px){.layout{grid-template-columns:1fr;padding:.85rem}.col-inputs{order:1}.col-outputs{order:2}}
 
-/* LAYOUT */
-.layout{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:1.1rem 1.25rem;align-items:start}
-@media(max-width:700px){
-  .layout{grid-template-columns:1fr;padding:.75rem}
-  /* Mobile column order: inputs first, then canvas+results */
-  .col-inputs{order:1}
-  .col-outputs{order:2}
-}
-
-/* CARDS */
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;margin-bottom:.75rem}
+.card{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:.85rem;box-shadow:var(--sh)}
 .card:last-child{margin-bottom:0}
-.card-sm{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.6rem .85rem;margin-bottom:.45rem}
-.sec-title{font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:.6rem}
+.ci{background:var(--bg3);border:1px solid var(--br);border-radius:var(--rs);padding:.7rem .9rem;margin-bottom:.5rem}
+.ci:last-child{margin-bottom:0}
+.slbl{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.65rem;display:flex;align-items:center;gap:.5rem}
 
-/* INPUTS */
-label{font-size:.76rem;color:var(--ink2);display:block;margin-bottom:.22rem;font-family:'Archivo',sans-serif}
-input[type=number],select{width:100%;padding:.4rem .6rem;background:var(--bg3);border:1px solid var(--border);border-radius:6px;font-family:'Archivo',sans-serif;font-size:.8rem;color:var(--ink);outline:none;transition:border-color .15s}
-input[type=number]:focus,select:focus{border-color:var(--red)}
-.col2-sm{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
-.col3-sm{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem}
+label{font-size:.85rem;font-weight:500;color:var(--ink2);display:block;margin-bottom:.3rem}
+input[type=number],select{width:100%;padding:.5rem .7rem;background:var(--bg);border:1.5px solid var(--br);border-radius:var(--rs);font-family:'Archivo',sans-serif;font-size:.9rem;color:var(--ink);outline:none;transition:border-color .15s;-moz-appearance:textfield}
+input[type=number]:focus,select:focus{border-color:var(--ac)}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem}
 
-/* BUTTONS */
-.btn{padding:.42rem .9rem;border-radius:6px;border:none;font-family:'Archivo',sans-serif;font-size:.78rem;font-weight:500;cursor:pointer;transition:all .15s;letter-spacing:.01em}
-.btn-primary{background:var(--red);color:#fff}.btn-primary:hover{opacity:.88}
-.btn-secondary{background:var(--bg3);color:var(--ink);border:1px solid var(--border)}.btn-secondary:hover{background:var(--border)}
-.btn-sm{padding:.28rem .58rem;font-size:.72rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem 1rem;border-radius:var(--rs);border:none;font-family:'Archivo',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-p{background:var(--ac);color:#fff}.btn-p:hover{background:var(--ac-d)}
+.btn-g{background:var(--bg3);color:var(--ink);border:1.5px solid var(--br)}.btn-g:hover{background:var(--br)}
+.btn-sm{padding:.38rem .75rem;font-size:.8rem}
+.btn-xs{padding:.25rem .55rem;font-size:.8rem}
 
-/* SUPPORT BUTTONS */
-.support-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem;margin-bottom:.7rem}
-.sup-btn{padding:.45rem .35rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg3);cursor:pointer;text-align:center;font-size:.68rem;color:var(--ink3);transition:all .15s;font-family:'Archivo',sans-serif;line-height:1.3}
-.sup-btn svg{display:block;margin:.1rem auto .2rem}
-.sup-btn.type-simple:hover,.sup-btn.type-simple.selected{border-color:var(--green);background:#e8f5ee;color:var(--green)}
-.sup-btn.type-pin:hover,.sup-btn.type-pin.selected{border-color:var(--blue);background:#e6f0fb;color:var(--blue)}
-.sup-btn.type-fixed:hover,.sup-btn.type-fixed.selected{border-color:var(--red);background:#fceee9;color:var(--red)}
-@media(prefers-color-scheme:dark){
-  .sup-btn.type-simple.selected{background:#143320}.sup-btn.type-pin.selected{background:#0d2645}.sup-btn.type-fixed.selected{background:#3a1410}
-}
-.sup-label{display:inline-flex;align-items:center;gap:.2rem;font-size:.68rem;font-weight:600;padding:.12rem .35rem;border-radius:4px;font-family:'Archivo',sans-serif}
-.sup-label.simple{background:#e8f5ee;color:var(--green)}
-.sup-label.pin{background:#e6f0fb;color:var(--blue)}
-.sup-label.fixed{background:#fceee9;color:var(--red)}
-@media(prefers-color-scheme:dark){
-  .sup-label.simple{background:#143320}.sup-label.pin{background:#0d2645}.sup-label.fixed{background:#3a1410}
-}
+.sg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.75rem}
+.so{padding:.55rem .3rem;border-radius:var(--rs);border:1.5px solid var(--br);background:var(--bg3);cursor:pointer;text-align:center;font-size:.8rem;font-weight:500;color:var(--ink3);transition:all .15s;font-family:'Archivo',sans-serif;line-height:1.35}
+.so svg{display:block;margin:0 auto .28rem}
+.so.ss.on{border-color:var(--gn);background:var(--gn-l);color:var(--gn)}
+.so.sp.on{border-color:var(--ac);background:var(--ac-l);color:var(--ac)}
+.so.sf.on{border-color:var(--rd);background:var(--rd-l);color:var(--rd)}
+.so.ss:hover:not(.on){border-color:var(--gn);color:var(--gn)}
+.so.sp:hover:not(.on){border-color:var(--ac);color:var(--ac)}
+.so.sf:hover:not(.on){border-color:var(--rd);color:var(--rd)}
 
-/* LOAD LIST */
-.load-item{display:flex;align-items:center;gap:.4rem;padding:.32rem .5rem;background:var(--bg3);border-radius:6px;margin-bottom:.32rem;font-size:.76rem}
-.load-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.load-dot.point{background:var(--red)}.load-dot.dist{background:var(--blue)}.load-dot.moment{background:var(--amber)}
-.load-name{flex:1;font-weight:500;font-size:.74rem}
+.badge{display:inline-flex;align-items:center;padding:.15rem .45rem;border-radius:4px;font-size:.7rem;font-weight:700;letter-spacing:.04em}
+.badge.simple{background:var(--gn-l);color:var(--gn)}
+.badge.pin{background:var(--ac-l);color:var(--ac)}
+.badge.fixed{background:var(--rd-l);color:var(--rd)}
 
-/* RESULTS */
-.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:.5rem;margin-top:.55rem}
-.result-card{background:var(--bg3);border-radius:8px;padding:.5rem .75rem;border-left:3px solid var(--red)}
-.result-card.blue{border-left-color:var(--blue)}.result-card.green{border-left-color:var(--green)}.result-card.amber{border-left-color:var(--amber)}
-.result-label{font-size:.65rem;color:var(--ink3);letter-spacing:.03em;margin-bottom:.12rem}
-.result-val{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:500;color:var(--ink)}
+.lrow{display:flex;align-items:center;gap:.5rem;padding:.4rem .6rem;background:var(--bg3);border-radius:6px;margin-bottom:.35rem;font-size:.8rem}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dp{background:var(--ac)}.dd{background:var(--gn)}.dm{background:var(--am)}
+.llbl{flex:1;font-weight:500;font-size:.8rem}
+.enote{font-size:.8rem;color:var(--ink3);padding:.25rem 0}
 
-/* CANVAS — responsive */
-canvas{display:block;border-radius:6px;width:100%;height:auto}
+.rg{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:.55rem;margin-top:.65rem}
+.rc{background:var(--bg3);border-radius:var(--rs);padding:.55rem .8rem;border-left:3px solid var(--ac)}
+.rc.g{border-left-color:var(--gn)}.rc.a{border-left-color:var(--am)}.rc.r{border-left-color:var(--rd)}
+.rl{font-size:.7rem;color:var(--ink3);margin-bottom:.15rem;font-weight:500}
+.rv{font-family:'DM Mono',monospace;font-size:1rem;font-weight:500;color:var(--ink)}
 
-/* FOOTER */
-.footer{border-top:1px solid var(--border);background:var(--bg2);padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;flex-shrink:0}
-.footer-credit{font-size:.72rem;color:var(--ink3)}
-.footer-credit strong{color:var(--ink);font-weight:600}
-.footer-link{display:inline-flex;align-items:center;gap:.35rem;font-size:.72rem;font-weight:500;color:var(--blue);text-decoration:none;padding:.28rem .6rem;border-radius:6px;border:1px solid var(--border);transition:all .15s;background:var(--bg3)}
-.footer-link:hover{background:#e6f0fb;border-color:var(--blue)}
-.footer-link svg{flex-shrink:0}
+canvas{display:block;width:100%;height:auto;border-radius:6px}
+
+.footer{margin-top:auto;border-top:1px solid var(--br);background:var(--bg2);padding:1.1rem 1.5rem;text-align:center}
+.fn{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:.25rem}
+.fs{font-size:.8rem;color:var(--ink3);margin-bottom:.75rem}
+.fl{display:flex;align-items:center;justify-content:center;gap:.75rem;flex-wrap:wrap}
+.fa{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .9rem;border-radius:var(--rs);border:1.5px solid var(--br);font-family:'Archivo',sans-serif;font-size:.8rem;font-weight:600;color:var(--ink2);text-decoration:none;background:var(--bg3);transition:all .15s}
+.fa:hover{border-color:var(--ac);color:var(--ac);background:var(--ac-l)}
+.fa.mp:hover{border-color:var(--gn);color:var(--gn);background:var(--gn-l)}
+.fsup{font-size:.8rem;color:var(--ink3);margin-bottom:.5rem}
 </style>
 </head>
-<body>
+<body id="app">
 
-<!-- HEADER -->
-<div class="header">
-  <div class="logo">cal<span>q</span></div>
-  <div class="logo-sub">Calculadora Estructural</div>
+<header class="header">
+  <div style="display:flex;align-items:baseline">
+    <div class="logo">cal<em>q</em><span class="logo-sub">Calculadora Estructural</span></div>
+  </div>
+  <button class="theme-btn" onclick="toggleTheme()" id="tbtn">Modo oscuro</button>
+</header>
+
+<div class="disclaimer">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+  Los resultados pueden no ser correctos. Verificá siempre con un profesional habilitado antes de ejecutar cualquier obra.
 </div>
 
-<!-- TABS -->
 <div class="tabs">
   <div class="tab active" onclick="switchTab('mnq')">Diagramas MNQ</div>
-  <div class="tab" onclick="switchTab('builder')">Constructor</div>
+  <div class="tab" onclick="switchTab('builder')">Constructor de Estructuras</div>
 </div>
 
-<!-- ===== PANEL MNQ ===== -->
+<!-- ═══════ PANEL MNQ ═══════ -->
 <div class="panel active" id="panel-mnq">
   <div class="layout">
-
-    <!-- INPUTS -->
     <div class="col-inputs">
       <div class="card">
-        <div class="sec-title">Longitud de Viga</div>
-        <div><label>Longitud total (m)</label><input type="number" id="viga-L" value="6" step="0.5" min="0.5" onchange="updateDiagrams()"></div>
-      </div>
-
-      <div class="card">
-        <div class="sec-title">Apoyo A &nbsp;<span class="sup-label simple" id="label-A">Simple</span></div>
-        <div class="support-grid">
-          <div class="sup-btn type-simple selected" id="supA-simple" onclick="selSup('A','simple',this)">
-            <svg width="32" height="24" viewBox="0 0 32 24"><line x1="16" y1="3" x2="16" y2="16" stroke="currentColor" stroke-width="1.6"/><polygon points="16,16 8,23 24,23" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="6" y1="24" x2="26" y2="24" stroke="currentColor" stroke-width="1.5"/></svg>Simple
-          </div>
-          <div class="sup-btn type-pin" id="supA-pin" onclick="selSup('A','pin',this)">
-            <svg width="32" height="24" viewBox="0 0 32 24"><line x1="16" y1="3" x2="16" y2="15" stroke="currentColor" stroke-width="1.6"/><polygon points="16,15 8,22 24,22" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="23.5" r="1.5" stroke="currentColor" fill="none" stroke-width="1.3"/></svg>Articulado
-          </div>
-          <div class="sup-btn type-fixed" id="supA-fixed" onclick="selSup('A','fixed',this)">
-            <svg width="32" height="24" viewBox="0 0 32 24"><line x1="16" y1="3" x2="16" y2="19" stroke="currentColor" stroke-width="1.6"/><rect x="12" y="19" width="7" height="4" fill="currentColor" rx="0" opacity=".35"/><line x1="8" y1="19" x2="24" y2="19" stroke="currentColor" stroke-width="1.5"/></svg>Empotrado
-          </div>
-        </div>
-
-        <div class="sec-title">Apoyo B &nbsp;<span class="sup-label simple" id="label-B">Simple</span></div>
-        <div class="support-grid">
-          <div class="sup-btn type-simple selected" id="supB-simple" onclick="selSup('B','simple',this)">
-            <svg width="32" height="24" viewBox="0 0 32 24"><line x1="16" y1="3" x2="16" y2="16" stroke="currentColor" stroke-width="1.6"/><polygon points="16,16 8,23 24,23" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="6" y1="24" x2="26" y2="24" stroke="currentColor" stroke-width="1.5"/></svg>Simple
-          </div>
-          <div class="sup-btn type-pin" id="supB-pin" onclick="selSup('B','pin',this)">
-            <svg width="32" height="24" viewBox="0 0 32 24"><line x1="16" y1="3" x2="16" y2="15" stroke="currentColor" stroke-width="1.6"/><polygon points="16,15 8,22 24,22" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="23.5" r="1.5" stroke="currentColor" fill="none" stroke-width="1.3"/></svg>Articulado
-          </div>
-          <div class="sup-btn type-fixed" id="supB-fixed" onclick="selSup('B','fixed',this)">
-            <svg width="32" height="24" viewBox="0 0 32 24"><line x1="16" y1="3" x2="16" y2="19" stroke="currentColor" stroke-width="1.6"/><rect x="12" y="19" width="7" height="4" fill="currentColor" rx="0" opacity=".35"/><line x1="8" y1="19" x2="24" y2="19" stroke="currentColor" stroke-width="1.5"/></svg>Empotrado
-          </div>
+        <div class="slbl">Longitud</div>
+        <div><label>Longitud total (m)</label>
+          <input type="number" id="vL" value="6" step="0.5" min="0.5" onchange="runMNQ()">
         </div>
       </div>
-
       <div class="card">
-        <div class="sec-title">Cargas</div>
-        <div style="display:flex;gap:.4rem;margin-bottom:.6rem;flex-wrap:wrap">
-          <button class="btn btn-secondary btn-sm" onclick="setLoadMode('point')">+ Puntual</button>
-          <button class="btn btn-secondary btn-sm" onclick="setLoadMode('dist')">+ Distribuida</button>
-          <button class="btn btn-secondary btn-sm" onclick="setLoadMode('moment')">+ Momento</button>
+        <div class="slbl">Apoyo A &nbsp;<span class="badge simple" id="lblA">Simple</span></div>
+        <div class="sg">
+          <div class="so ss on" id="sA-simple" onclick="selSup('A','simple',this)"><svg width="30" height="22" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="14" stroke="currentColor" stroke-width="1.7"/><polygon points="15,14 7,21 23,21" fill="none" stroke="currentColor" stroke-width="1.7"/><line x1="5" y1="22" x2="25" y2="22" stroke="currentColor" stroke-width="1.5"/></svg>Simple</div>
+          <div class="so sp" id="sA-pin" onclick="selSup('A','pin',this)"><svg width="30" height="22" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="13" stroke="currentColor" stroke-width="1.7"/><polygon points="15,13 7,20 23,20" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="15" cy="21.5" r="1.5" stroke="currentColor" fill="none" stroke-width="1.4"/></svg>Articulado</div>
+          <div class="so sf" id="sA-fixed" onclick="selSup('A','fixed',this)"><svg width="30" height="22" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="18" stroke="currentColor" stroke-width="1.7"/><rect x="11" y="18" width="7" height="4" fill="currentColor" opacity=".35"/><line x1="7" y1="18" x2="23" y2="18" stroke="currentColor" stroke-width="1.5"/></svg>Empotrado</div>
         </div>
-        <div id="load-form-point" class="card-sm" style="display:none">
-          <div class="col3-sm" style="margin-bottom:.35rem">
-            <div><label>Posición (m)</label><input type="number" id="lp-pos" value="3" step="0.1"></div>
+        <div class="slbl" style="margin-top:.1rem">Apoyo B &nbsp;<span class="badge simple" id="lblB">Simple</span></div>
+        <div class="sg" style="margin-bottom:0">
+          <div class="so ss on" id="sB-simple" onclick="selSup('B','simple',this)"><svg width="30" height="22" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="14" stroke="currentColor" stroke-width="1.7"/><polygon points="15,14 7,21 23,21" fill="none" stroke="currentColor" stroke-width="1.7"/><line x1="5" y1="22" x2="25" y2="22" stroke="currentColor" stroke-width="1.5"/></svg>Simple</div>
+          <div class="so sp" id="sB-pin" onclick="selSup('B','pin',this)"><svg width="30" height="22" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="13" stroke="currentColor" stroke-width="1.7"/><polygon points="15,13 7,20 23,20" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="15" cy="21.5" r="1.5" stroke="currentColor" fill="none" stroke-width="1.4"/></svg>Articulado</div>
+          <div class="so sf" id="sB-fixed" onclick="selSup('B','fixed',this)"><svg width="30" height="22" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="18" stroke="currentColor" stroke-width="1.7"/><rect x="11" y="18" width="7" height="4" fill="currentColor" opacity=".35"/><line x1="7" y1="18" x2="23" y2="18" stroke="currentColor" stroke-width="1.5"/></svg>Empotrado</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="slbl">Cargas</div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.65rem">
+          <button class="btn btn-g btn-sm" onclick="tf('mnq','point')">+ Puntual</button>
+          <button class="btn btn-g btn-sm" onclick="tf('mnq','dist')">+ Distribuida</button>
+          <button class="btn btn-g btn-sm" onclick="tf('mnq','moment')">+ Momento</button>
+        </div>
+        <div id="mnq-fp" class="ci" style="display:none">
+          <div class="g2" style="margin-bottom:.45rem">
+            <div><label>Posición (m)</label><input type="number" id="lp-pos" value="3" step="0.1" min="0"></div>
             <div><label>Magnitud (kN)</label><input type="number" id="lp-mag" value="10" step="1"></div>
-            <div style="display:flex;align-items:flex-end"><button class="btn btn-primary btn-sm" style="width:100%" onclick="addLoad('point')">+</button></div>
           </div>
+          <button class="btn btn-p btn-sm" style="width:100%" onclick="addLoad('point')">Agregar carga puntual</button>
         </div>
-        <div id="load-form-dist" class="card-sm" style="display:none">
-          <div class="col2-sm" style="margin-bottom:.32rem">
-            <div><label>Inicio (m)</label><input type="number" id="ld-a" value="0" step="0.1"></div>
+        <div id="mnq-fd" class="ci" style="display:none">
+          <div class="g2" style="margin-bottom:.45rem">
+            <div><label>Inicio (m)</label><input type="number" id="ld-a" value="0" step="0.1" min="0"></div>
             <div><label>Fin (m)</label><input type="number" id="ld-b" value="6" step="0.1"></div>
           </div>
-          <div class="col2-sm" style="margin-bottom:.32rem">
+          <div class="g2" style="margin-bottom:.45rem">
             <div><label>q inicio (kN/m)</label><input type="number" id="ld-qa" value="5" step="1"></div>
             <div><label>q fin (kN/m)</label><input type="number" id="ld-qb" value="5" step="1"></div>
           </div>
-          <button class="btn btn-primary btn-sm" style="width:100%" onclick="addLoad('dist')">Agregar</button>
+          <button class="btn btn-p btn-sm" style="width:100%" onclick="addLoad('dist')">Agregar carga distribuida</button>
         </div>
-        <div id="load-form-moment" class="card-sm" style="display:none">
-          <div class="col2-sm" style="margin-bottom:.32rem">
-            <div><label>Posición (m)</label><input type="number" id="lm-pos" value="3" step="0.1"></div>
+        <div id="mnq-fm" class="ci" style="display:none">
+          <div class="g2" style="margin-bottom:.45rem">
+            <div><label>Posición (m)</label><input type="number" id="lm-pos" value="3" step="0.1" min="0"></div>
             <div><label>Magnitud (kN·m)</label><input type="number" id="lm-mag" value="8" step="1"></div>
           </div>
-          <button class="btn btn-primary btn-sm" style="width:100%" onclick="addLoad('moment')">Agregar</button>
+          <button class="btn btn-p btn-sm" style="width:100%" onclick="addLoad('moment')">Agregar momento</button>
         </div>
-        <div id="load-list" style="margin-top:.45rem"></div>
+        <div id="mnq-ll" style="margin-top:.5rem"></div>
       </div>
-
-      <button class="btn btn-primary" style="width:100%;margin-bottom:.75rem" onclick="updateDiagrams()">Calcular y Graficar</button>
+      <button class="btn btn-p" style="width:100%;padding:.6rem 1rem;font-size:.9rem" onclick="runMNQ()">Calcular y Graficar</button>
     </div>
-
-    <!-- OUTPUTS -->
     <div class="col-outputs">
-      <div class="card">
-        <div class="sec-title">Estructura con Cargas</div>
-        <canvas id="cvBeam" width="520" height="120"></canvas>
-      </div>
-      <div class="card">
-        <div class="sec-title">Momentos M (kN·m)</div>
-        <canvas id="cvM" width="520" height="105"></canvas>
-      </div>
-      <div class="card">
-        <div class="sec-title">Corte Q (kN)</div>
-        <canvas id="cvQ" width="520" height="105"></canvas>
-      </div>
-      <div class="card">
-        <div class="sec-title">Axial N (kN)</div>
-        <canvas id="cvN" width="520" height="60"></canvas>
-      </div>
-      <div id="results-mnq"></div>
+      <div class="card"><div class="slbl">Estructura con cargas</div><canvas id="cv-beam" width="700" height="132"></canvas></div>
+      <div class="card"><div class="slbl">Momentos — M (kN·m)</div><canvas id="cv-M" width="700" height="130"></canvas></div>
+      <div class="card"><div class="slbl">Corte — Q (kN)</div><canvas id="cv-Q" width="700" height="130"></canvas></div>
+      <div class="card"><div class="slbl">Axial — N (kN)</div><canvas id="cv-N" width="700" height="58"></canvas></div>
+      <div id="mnq-res"></div>
     </div>
   </div>
 </div>
 
-<!-- ===== PANEL BUILDER ===== -->
+<!-- ═══════ PANEL BUILDER ═══════ -->
 <div class="panel" id="panel-builder">
   <div class="layout">
-
-    <!-- INPUTS -->
     <div class="col-inputs">
       <div class="card">
-        <div class="sec-title">Longitud de la Estructura</div>
-        <div><label>Longitud (m)</label><input type="number" id="bld-L" value="8" step="0.5" min="1" onchange="buildRender()"></div>
+        <div class="slbl">Longitud</div>
+        <div><label>Longitud total (m)</label>
+          <input type="number" id="bL" value="8" step="0.5" min="1" onchange="bRender()">
+        </div>
       </div>
-
       <div class="card">
-        <div class="sec-title">Apoyos</div>
-        <div class="col2-sm" style="margin-bottom:.45rem">
-          <div><label>Posición (m)</label><input type="number" id="bld-sup-pos" value="0" step="0.5" min="0"></div>
+        <div class="slbl">Apoyos</div>
+        <div class="g2" style="margin-bottom:.5rem">
+          <div><label>Posición (m)</label><input type="number" id="b-sp" value="0" step="0.5" min="0"></div>
           <div><label>Tipo</label>
-            <select id="bld-sup-type">
-              <option value="simple">Simple (verde)</option>
-              <option value="pin">Articulado (azul)</option>
-              <option value="fixed">Empotrado (rojo)</option>
+            <select id="b-st">
+              <option value="simple">Simple</option>
+              <option value="pin">Articulado</option>
+              <option value="fixed">Empotrado</option>
             </select>
           </div>
         </div>
-        <button class="btn btn-primary btn-sm" style="width:100%" onclick="addBldSupport()">Agregar Apoyo</button>
-        <div id="bld-sup-list" style="margin-top:.55rem"></div>
+        <button class="btn btn-p btn-sm" style="width:100%" onclick="addBSup()">Agregar apoyo</button>
+        <div id="b-sl" style="margin-top:.6rem"></div>
       </div>
-
       <div class="card">
-        <div class="sec-title">Cargas</div>
-        <div style="display:flex;gap:.4rem;margin-bottom:.55rem;flex-wrap:wrap">
-          <button class="btn btn-secondary btn-sm" onclick="setBldMode('point')">+ Puntual</button>
-          <button class="btn btn-secondary btn-sm" onclick="setBldMode('dist')">+ Distribuida</button>
-          <button class="btn btn-secondary btn-sm" onclick="setBldMode('moment')">+ Momento</button>
+        <div class="slbl">Cargas</div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.65rem">
+          <button class="btn btn-g btn-sm" onclick="tf('b','point')">+ Puntual</button>
+          <button class="btn btn-g btn-sm" onclick="tf('b','dist')">+ Distribuida</button>
+          <button class="btn btn-g btn-sm" onclick="tf('b','moment')">+ Momento</button>
         </div>
-        <div id="bld-load-form-point" class="card-sm" style="display:none">
-          <div class="col3-sm" style="margin-bottom:.3rem">
-            <div><label>Pos (m)</label><input type="number" id="blp-pos" value="4" step="0.1"></div>
-            <div><label>Fuerza (kN)</label><input type="number" id="blp-mag" value="20" step="1"></div>
-            <div style="display:flex;align-items:flex-end"><button class="btn btn-primary btn-sm" style="width:100%" onclick="addBldLoad('point')">+</button></div>
+        <div id="b-fp" class="ci" style="display:none">
+          <div class="g2" style="margin-bottom:.45rem">
+            <div><label>Posición (m)</label><input type="number" id="bp-pos" value="4" step="0.1" min="0"></div>
+            <div><label>Fuerza (kN)</label><input type="number" id="bp-mag" value="20" step="1"></div>
           </div>
+          <button class="btn btn-p btn-sm" style="width:100%" onclick="addBLoad('point')">Agregar carga puntual</button>
         </div>
-        <div id="bld-load-form-dist" class="card-sm" style="display:none">
-          <div class="col2-sm" style="margin-bottom:.3rem">
-            <div><label>Inicio (m)</label><input type="number" id="bld-qa-pos" value="0" step="0.1"></div>
-            <div><label>Fin (m)</label><input type="number" id="bld-qb-pos" value="8" step="0.1"></div>
+        <div id="b-fd" class="ci" style="display:none">
+          <div class="g2" style="margin-bottom:.45rem">
+            <div><label>Inicio (m)</label><input type="number" id="bd-a" value="0" step="0.1" min="0"></div>
+            <div><label>Fin (m)</label><input type="number" id="bd-b" value="8" step="0.1"></div>
           </div>
-          <div class="col2-sm" style="margin-bottom:.3rem">
-            <div><label>q inicio (kN/m)</label><input type="number" id="bld-qa-val" value="10" step="1"></div>
-            <div><label>q fin (kN/m)</label><input type="number" id="bld-qb-val" value="10" step="1"></div>
+          <div class="g2" style="margin-bottom:.45rem">
+            <div><label>q inicio (kN/m)</label><input type="number" id="bd-qa" value="10" step="1"></div>
+            <div><label>q fin (kN/m)</label><input type="number" id="bd-qb" value="10" step="1"></div>
           </div>
-          <button class="btn btn-primary btn-sm" style="width:100%" onclick="addBldLoad('dist')">Agregar</button>
+          <button class="btn btn-p btn-sm" style="width:100%" onclick="addBLoad('dist')">Agregar carga distribuida</button>
         </div>
-        <div id="bld-load-form-moment" class="card-sm" style="display:none">
-          <div class="col2-sm" style="margin-bottom:.3rem">
-            <div><label>Pos (m)</label><input type="number" id="blm-pos" value="4" step="0.1"></div>
-            <div><label>M (kN·m)</label><input type="number" id="blm-mag" value="15" step="1"></div>
+        <div id="b-fm" class="ci" style="display:none">
+          <div class="g2" style="margin-bottom:.45rem">
+            <div><label>Posición (m)</label><input type="number" id="bm-pos" value="4" step="0.1" min="0"></div>
+            <div><label>M (kN·m)</label><input type="number" id="bm-mag" value="15" step="1"></div>
           </div>
-          <button class="btn btn-primary btn-sm" style="width:100%" onclick="addBldLoad('moment')">Agregar</button>
+          <button class="btn btn-p btn-sm" style="width:100%" onclick="addBLoad('moment')">Agregar momento</button>
         </div>
-        <div id="bld-load-list" style="margin-top:.45rem"></div>
+        <div id="b-ll" style="margin-top:.5rem"></div>
       </div>
-
-      <div style="display:flex;gap:.5rem;margin-bottom:.75rem">
-        <button class="btn btn-primary" style="flex:1" onclick="calcBuilder()">Calcular</button>
-        <button class="btn btn-secondary" onclick="resetBuilder()">Limpiar</button>
+      <div style="display:flex;gap:.6rem">
+        <button class="btn btn-p" style="flex:1;padding:.6rem 1rem;font-size:.9rem" onclick="calcBuilder()">Calcular</button>
+        <button class="btn btn-g" style="padding:.6rem 1rem;font-size:.9rem" onclick="resetBuilder()">Limpiar</button>
       </div>
     </div>
-
-    <!-- OUTPUTS -->
     <div class="col-outputs">
-      <div class="card">
-        <div class="sec-title">Vista de la Estructura</div>
-        <canvas id="cvBld" width="520" height="128"></canvas>
-      </div>
-      <div class="card">
-        <div class="sec-title">Momentos M (kN·m)</div>
-        <canvas id="cvBldM" width="520" height="100"></canvas>
-      </div>
-      <div class="card">
-        <div class="sec-title">Corte Q (kN)</div>
-        <canvas id="cvBldQ" width="520" height="100"></canvas>
-      </div>
-      <div class="card" id="card-reactions" style="display:none">
-        <div class="sec-title">Reacciones en Apoyos</div>
-        <div id="bld-reactions"></div>
-      </div>
-      <div class="card" id="card-extremes" style="display:none">
-        <div class="sec-title">Extremos M, Q, N</div>
-        <div id="bld-extremes"></div>
-      </div>
+      <div class="card"><div class="slbl">Vista de la estructura</div><canvas id="cv-bld" width="700" height="180"></canvas></div>
+      <div class="card"><div class="slbl">Momentos — M (kN·m)</div><canvas id="cv-bM" width="700" height="130"></canvas></div>
+      <div class="card"><div class="slbl">Corte — Q (kN)</div><canvas id="cv-bQ" width="700" height="130"></canvas></div>
+      <div id="b-res"></div>
     </div>
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer class="footer">
-  <div class="footer-credit">
-    Desarrollado por <strong>Matías González T.</strong> &nbsp;·&nbsp; <span style="color:var(--ink3)">calq v1.0</span>
+  <div class="fn">Desarrollado por Matías González T.</div>
+  <div class="fs">calq v1.1 &nbsp;·&nbsp; Calculadora Estructural para Arquitectos</div>
+  <div class="fsup">¿Te resultó útil? Podés ayudarme a seguir con otros proyectos acá:</div>
+  <div class="fl">
+    <a class="fa" href="https://linkedin.com/in/matiasgonzalezt/" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.37V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.26 2.36 4.26 5.43v6.31zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45C23.21 24 24 23.23 24 22.28V1.72C24 .77 23.21 0 22.22 0z"/></svg>
+      LinkedIn
+    </a>
+    <a class="fa mp" href="https://link.mercadopago.com.ar/matiasgonzalezt" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l2.5 2.5L16 9"/></svg>
+      Apoyá mi trabajo
+    </a>
   </div>
-  <a class="footer-link" href="https://linkedin.com/in/matiasgonzalezt/" target="_blank" rel="noopener">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.37V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.26 2.36 4.26 5.43v6.31zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45C23.21 24 24 23.23 24 22.28V1.72C24 .77 23.21 0 22.22 0z"/></svg>
-    linkedin.com/in/matiasgonzalezt
-  </a>
 </footer>
 
 <script>
-/* === STATE === */
-const st={supA:'simple',supB:'simple',loads:[],loadMode:null};
-const bld={supports:[],loads:[],loadMode:null};
+/* ═══════════ STATE ═══════════ */
+const mnq = {supA:'simple', supB:'simple', loads:[]};
+const bld = {supports:[], loads:[]};
+let isDark = false;
 
-const dark=matchMedia('(prefers-color-scheme:dark)').matches;
-const C={
-  ink:dark?'#e8e5dc':'#1a1a1a',ink2:dark?'#b8b5ac':'#666',ink3:dark?'#787570':'#999',
-  bg2:dark?'#221f1c':'#fff',bg3:dark?'#2a2722':'#f0ede6',border:dark?'#3a3730':'#e0ddd4',
-  red:'#c84b2f',blue:'#2f6fc8',green:'#2a7a4b',amber:'#c87a2f'
-};
-const SUP_COLOR={simple:C.green,pin:C.blue,roller:C.blue,fixed:C.red};
-const SUP_LABEL={simple:'Simple',pin:'Articulado',roller:'Articulado',fixed:'Empotrado'};
+/* ═══════════ COLORS ═══════════ */
+function C(){
+  return isDark ? {
+    ink:'#f4f4f5', ink2:'#a1a1aa', ink3:'#71717a',
+    bg:'#111113', bg2:'#18181b', bg3:'#27272a', br:'#3f3f46',
+    ac:'#3b82f6', gn:'#22c55e', rd:'#f87171', am:'#fbbf24'
+  } : {
+    ink:'#18181b', ink2:'#52525b', ink3:'#a1a1aa',
+    bg:'#f4f4f5', bg2:'#ffffff', bg3:'#e4e4e7', br:'#d4d4d8',
+    ac:'#2563eb', gn:'#16a34a', rd:'#dc2626', am:'#d97706'
+  };
+}
 
-/* === TABS === */
+const SUP_LABEL = {simple:'Simple', pin:'Articulado', fixed:'Empotrado'};
+const SUP_CLS   = {simple:'simple', pin:'pin', fixed:'fixed'};
+
+/* ═══════════ THEME ═══════════ */
+function toggleTheme(){
+  isDark = !isDark;
+  document.getElementById('app').classList.toggle('dk', isDark);
+  document.getElementById('tbtn').textContent = isDark ? 'Modo claro' : 'Modo oscuro';
+  runMNQ(); bRender();
+}
+
+/* ═══════════ TABS ═══════════ */
 function switchTab(t){
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='mnq')||(i===1&&t==='builder')));
   document.querySelectorAll('.panel').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='mnq')||(i===1&&t==='builder')));
-  if(t==='mnq')updateDiagrams();else buildRender();
+  if(t==='mnq') runMNQ(); else bRender();
 }
 
-/* === SUPPORT SELECTION === */
-function selSup(side,type,el){
-  ['simple','pin','fixed'].forEach(t=>{const b=document.getElementById('sup'+side+'-'+t);if(b)b.classList.remove('selected');});
-  el.classList.add('selected');
-  st['sup'+side]=type;
-  const lbl=document.getElementById('label-'+side);
-  lbl.textContent=SUP_LABEL[type];
-  lbl.className='sup-label '+(type==='simple'?'simple':type==='pin'?'pin':'fixed');
-  updateDiagrams();
+/* ═══════════ SUPPORT SELECT ═══════════ */
+function selSup(side, type, el){
+  ['simple','pin','fixed'].forEach(t=>{ const b=document.getElementById('s'+side+'-'+t); if(b) b.classList.remove('on'); });
+  el.classList.add('on');
+  mnq['sup'+side] = type;
+  const lbl = document.getElementById('lbl'+side);
+  lbl.textContent = SUP_LABEL[type]; lbl.className = 'badge '+SUP_CLS[type];
+  runMNQ();
 }
 
-/* === LOAD MODES === */
-function setLoadMode(m){
-  st.loadMode=st.loadMode===m?null:m;
-  ['point','dist','moment'].forEach(x=>document.getElementById('load-form-'+x).style.display=(st.loadMode===x?'block':'none'));
-}
-function setBldMode(m){
-  bld.loadMode=bld.loadMode===m?null:m;
-  ['point','dist','moment'].forEach(x=>document.getElementById('bld-load-form-'+x).style.display=(bld.loadMode===x?'block':'none'));
-}
+/* ═══════════ FORM TOGGLE ═══════════ */
+function tf(pfx, type){
+  const ids = {mnq:{point:'mnq-fp',dist:'mnq-fd',moment:'mnq-fm'}, b:{point:'b-fp',dist:'b-fd',moment:'b-fm'}};
+  const all  = Object.values(ids[pfx]);
+  const cur  = ids[pfx][type];
+  
+  const targetEl = document.getElementById(cur);
+  const isVisible = targetEl && targetEl.style.display === 'block';
 
-/* === LOADS MNQ === */
-function addLoad(type){
-  const L=+document.getElementById('viga-L').value;
-  if(type==='point'){
-    const pos=+document.getElementById('lp-pos').value,mag=+document.getElementById('lp-mag').value;
-    if(pos<0||pos>L)return alert('Posición fuera del rango');
-    st.loads.push({type,pos,mag,id:Date.now()});
-  }else if(type==='dist'){
-    st.loads.push({type,a:+document.getElementById('ld-a').value,b:+document.getElementById('ld-b').value,qa:+document.getElementById('ld-qa').value,qb:+document.getElementById('ld-qb').value,id:Date.now()});
-  }else{
-    st.loads.push({type:'moment',pos:+document.getElementById('lm-pos').value,mag:+document.getElementById('lm-mag').value,id:Date.now()});
+  // 1. Ocultamos todos los formularios de esa sección primero
+  all.forEach(id => { 
+    const el = document.getElementById(id); 
+    if(el) el.style.display = 'none'; 
+  });
+
+  // 2. Si el formulario que tocaste NO estaba visible, lo mostramos
+  if(targetEl && !isVisible) {
+    targetEl.style.display = 'block';
   }
-  renderLL();updateDiagrams();
 }
-function removeLoad(id){st.loads=st.loads.filter(l=>l.id!==id);renderLL();updateDiagrams();}
-function renderLL(){
-  const div=document.getElementById('load-list');
-  if(!st.loads.length){div.innerHTML='<div style="font-size:.73rem;color:var(--ink3)">Sin cargas aplicadas</div>';return;}
-  div.innerHTML=st.loads.map(l=>{
-    const dot=l.type==='point'?'point':l.type==='dist'?'dist':'moment';
-    const lbl=l.type==='point'?`Puntual ${l.mag} kN @ ${l.pos}m`:l.type==='dist'?`Dist. ${l.qa}–${l.qb} kN/m [${l.a}–${l.b}m]`:`Momento ${l.mag} kN·m @ ${l.pos}m`;
-    return`<div class="load-item"><div class="load-dot ${dot}"></div><span class="load-name">${lbl}</span><button class="btn btn-secondary btn-sm" onclick="removeLoad(${l.id})" style="padding:.12rem .38rem">✕</button></div>`;
+
+/* ═══════════ MNQ LOADS ═══════════ */
+function addLoad(type){
+  const L = +document.getElementById('vL').value;
+  if(type==='point'){
+    const pos=+document.getElementById('lp-pos').value, mag=+document.getElementById('lp-mag').value;
+    if(pos<0||pos>L) return alert('Posición fuera del rango');
+    mnq.loads.push({type,pos,mag,id:Date.now()});
+  } else if(type==='dist'){
+    mnq.loads.push({type,a:+document.getElementById('ld-a').value,b:+document.getElementById('ld-b').value,qa:+document.getElementById('ld-qa').value,qb:+document.getElementById('ld-qb').value,id:Date.now()});
+  } else {
+    mnq.loads.push({type:'moment',pos:+document.getElementById('lm-pos').value,mag:+document.getElementById('lm-mag').value,id:Date.now()});
+  }
+  renderLL('mnq'); runMNQ();
+}
+function removeLoad(id){ mnq.loads=mnq.loads.filter(l=>l.id!==id); renderLL('mnq'); runMNQ(); }
+
+/* ═══════════ BUILDER SUPPORTS ═══════════ */
+function addBSup(){
+  const pos=+document.getElementById('b-sp').value, type=document.getElementById('b-st').value, L=+document.getElementById('bL').value;
+  if(pos<0||pos>L) return alert('Posición fuera del rango');
+  if(bld.supports.some(s=>Math.abs(s.pos-pos)<0.01)) return alert('Ya existe un apoyo en esa posición');
+  bld.supports.push({pos,type,id:Date.now()});
+  bld.supports.sort((a,b)=>a.pos-b.pos);
+  renderBSups(); bRender();
+}
+function removeBSup(id){ bld.supports=bld.supports.filter(s=>s.id!==id); renderBSups(); bRender(); }
+
+/* ═══════════ BUILDER LOADS ═══════════ */
+function addBLoad(type){
+  if(type==='point') bld.loads.push({type,pos:+document.getElementById('bp-pos').value,mag:+document.getElementById('bp-mag').value,id:Date.now()});
+  else if(type==='dist') bld.loads.push({type,a:+document.getElementById('bd-a').value,b:+document.getElementById('bd-b').value,qa:+document.getElementById('bd-qa').value,qb:+document.getElementById('bd-qb').value,id:Date.now()});
+  else bld.loads.push({type:'moment',pos:+document.getElementById('bm-pos').value,mag:+document.getElementById('bm-mag').value,id:Date.now()});
+  renderLL('b'); bRender();
+}
+function removeBLoad(id){ bld.loads=bld.loads.filter(l=>l.id!==id); renderLL('b'); bRender(); }
+
+/* ═══════════ RENDER LISTS ═══════════ */
+function renderLL(pfx){
+  const loads = pfx==='mnq' ? mnq.loads : bld.loads;
+  const divId = pfx==='mnq' ? 'mnq-ll' : 'b-ll';
+  const div = document.getElementById(divId); if(!div) return;
+  if(!loads.length){ div.innerHTML='<div class="enote">Sin cargas aplicadas</div>'; return; }
+  const fn = pfx==='mnq' ? 'removeLoad' : 'removeBLoad';
+  div.innerHTML = loads.map(l=>{
+    const dot = l.type==='point'?'dp':l.type==='dist'?'dd':'dm';
+    const lbl = l.type==='point'?`Puntual ${l.mag} kN @ ${l.pos}m`:l.type==='dist'?`Distribuida ${l.qa}–${l.qb} kN/m [${l.a}–${l.b}m]`:`Momento ${l.mag} kN·m @ ${l.pos}m`;
+    return `<div class="lrow"><div class="dot ${dot}"></div><span class="llbl">${lbl}</span><button class="btn btn-g btn-xs" onclick="${fn}(${l.id})">✕</button></div>`;
   }).join('');
 }
 
-/* === CALC ENGINE === */
-function calcBeam(L,supA,supB,loads){
-  const N=300,dx=L/N,xs=Array.from({length:N+1},(_,i)=>i*dx);
-  let totalV=0,totalMA=0;
+function renderBSups(){
+  const div = document.getElementById('b-sl'); if(!div) return;
+  if(!bld.supports.length){ div.innerHTML='<div class="enote">Sin apoyos</div>'; return; }
+  const COLS={simple:'gn',pin:'ac',fixed:'rd'};
+  div.innerHTML = bld.supports.map(s=>`
+    <div class="lrow">
+      <div class="dot" style="background:var(--${COLS[s.type]})"></div>
+      <span class="llbl"><span class="badge ${SUP_CLS[s.type]}">${SUP_LABEL[s.type]}</span> @ ${s.pos}m</span>
+      <button class="btn btn-g btn-xs" onclick="removeBSup(${s.id})">✕</button>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════════════════
+   CORE ENGINE — Trabaja sobre la longitud total L
+   Los apoyos pueden estar en CUALQUIER posición dentro
+   de [0, L]. Los extremos libres se calculan y grafican.
+   ══════════════════════════════════════════════════════ */
+
+/**
+ * Calcula reacciones para una viga isostática con 2 apoyos
+ * posicionados en posA y posB (coordenadas globales 0..L).
+ * Las cargas se expresan también en coords globales.
+ */
+function calcReactions(posA, posB, typeA, typeB, loads){
+  // Suma de cargas verticales y momento respecto de posA
+  let sumV = 0, sumMA = 0;
   loads.forEach(l=>{
-    if(l.type==='point'){totalV+=l.mag;totalMA+=l.mag*l.pos;}
-    else if(l.type==='dist'){const len=l.b-l.a,F=(l.qa+l.qb)/2*len,xc=l.a+len*(l.qa+2*l.qb)/(3*((l.qa+l.qb)||1));totalV+=F;totalMA+=F*xc;}
-    else if(l.type==='moment'){totalMA+=l.mag;}
+    if(l.type==='point'){
+      sumV  += l.mag;
+      sumMA += l.mag * (l.pos - posA);
+    } else if(l.type==='dist'){
+      const len = l.b - l.a;
+      const F   = (l.qa + l.qb) / 2 * len;
+      const t   = (l.qa + l.qb) === 0 ? 0.5 : (l.qa + 2*l.qb) / (3*(l.qa+l.qb));
+      const xc  = l.a + len * t;
+      sumV  += F;
+      sumMA += F * (xc - posA);
+    } else if(l.type==='moment'){
+      sumMA += l.mag;
+    }
   });
-  let RA=0,RB=0,MA_fix=0;
-  const fA=supA==='fixed',fB=supB==='fixed';
-  if(!fA&&!fB){RB=totalMA/L;RA=totalV-RB;}
-  else if(fA&&!fB){RB=totalMA/L;RA=totalV-RB;MA_fix=-(totalV*L-totalMA)/2;}
-  else if(!fA&&fB){RA=(totalV*L-totalMA)/L;RB=totalV-RA;}
-  else{RB=totalMA/L;RA=totalV-RB;MA_fix=-(totalV*L-totalMA)/2;}
-  if(fA&&supB==='free'){RA=totalV;MA_fix=-totalMA;RB=0;}
-  const Q=xs.map(x=>{
-    let q=RA;
-    loads.forEach(l=>{
-      if(l.type==='point'&&x>l.pos)q-=l.mag;
-      else if(l.type==='dist'){if(x>=l.b)q-=(l.qa+l.qb)/2*(l.b-l.a);else if(x>l.a){const t=(x-l.a)/(l.b-l.a),qx=l.qa+(l.qb-l.qa)*t;q-=(l.qa+qx)/2*(x-l.a);}}
+
+  const span = posB - posA; // distancia entre apoyos
+  let RA=0, RB=0, MA=0, MB=0;
+
+  if(span < 1e-9){
+    // Apoyos en la misma posición — degenerate
+    RA = sumV / 2; RB = sumV / 2;
+  } else {
+    // Isostática: ΣMb=0 → RA, ΣV=0 → RB
+    RA = (span * 0 + sumV * span - sumMA) / span; // ΣMb=0: RA·span = sumV·span - sumMA
+    // Simplificando: RA·span = sumV·span - sumMA
+    RA = sumV - sumMA / span;
+    // Wait — let's be explicit:
+    // ΣM_B = 0: -RA·span + sumV_contribution_moments_about_B = 0
+    // sumMA is already moment about A
+    // M_B = sumMA - sumV*(posB-posA)? No.
+    // Let's redo cleanly:
+    // ΣM_A = 0: RB·span - sumMA_aboutA = 0  → RB = sumMA_aboutA / span
+    RB = sumMA / span;
+    RA = sumV - RB;
+  }
+  return {RA, RB, MA:0, MB:0};
+}
+
+/**
+ * Construye los arrays Q(x) y M(x) en coords globales 0..L.
+ * posA, posB: posiciones globales de los dos apoyos.
+ * RA, RB: reacciones calculadas.
+ * loads: cargas en coords globales.
+ */
+function buildQM(L, posA, posB, RA, RB, loads){
+  const N  = 500;
+  const dx = L / N;
+  const xs = Array.from({length:N+1}, (_,i) => i*dx);
+
+  const Q = xs.map(x => {
+    let q = 0;
+    // Reacciones como fuerzas hacia arriba
+    if(x >= posA) q += RA;
+    if(x >= posB) q += RB;
+    // Cargas externas (hacia abajo = positivo convención)
+    loads.forEach(l => {
+      if(l.type==='point' && x > l.pos){
+        q -= l.mag;
+      } else if(l.type==='dist'){
+        if(x >= l.b){
+          q -= (l.qa + l.qb)/2 * (l.b - l.a);
+        } else if(x > l.a){
+          const s  = (x - l.a)/(l.b - l.a);
+          const qx = l.qa + (l.qb - l.qa)*s;
+          q -= (l.qa + qx)/2 * (x - l.a);
+        }
+      }
     });
     return q;
   });
-  const M=xs.map(x=>{
-    let m=MA_fix+RA*x;
-    loads.forEach(l=>{
-      if(l.type==='point'&&x>l.pos)m-=l.mag*(x-l.pos);
-      else if(l.type==='dist'){
-        if(x>=l.b){const len=l.b-l.a,F=(l.qa+l.qb)/2*len,xc=l.a+len*(l.qa+2*l.qb)/(3*((l.qa+l.qb)||1));m-=F*(x-xc);}
-        else if(x>l.a){const len2=x-l.a,t=len2/(l.b-l.a),qx=l.qa+(l.qb-l.qa)*t,F=(l.qa+qx)/2*len2,xc2=l.a+len2*(l.qa+2*qx)/(3*((l.qa+qx)||1));m-=F*(x-xc2);}
+
+  // M(x) por integración de Q desde x=0
+  // M(0) = 0 (extremo libre izquierdo, o el momento de empotramiento si corresponde)
+  const M = xs.map(x => {
+    let m = 0;
+    if(x > posA) m += RA*(x - posA);
+    if(x > posB) m += RB*(x - posB);
+    loads.forEach(l => {
+      if(l.type==='point' && x > l.pos){
+        m -= l.mag*(x - l.pos);
+      } else if(l.type==='dist'){
+        if(x >= l.b){
+          const len = l.b - l.a;
+          const F   = (l.qa + l.qb)/2 * len;
+          const t   = (l.qa+l.qb)===0 ? 0.5 : (l.qa+2*l.qb)/(3*(l.qa+l.qb));
+          const xc  = l.a + len*t;
+          m -= F*(x - xc);
+        } else if(x > l.a){
+          const s   = (x - l.a)/(l.b - l.a);
+          const qx  = l.qa + (l.qb - l.qa)*s;
+          const F   = (l.qa + qx)/2*(x - l.a);
+          const ts  = (l.qa+2*qx)===0 ? 0.5 : (l.qa+2*qx)/(3*(l.qa+qx));
+          const xc  = l.a + (x-l.a)*ts;
+          m -= F*(x - xc);
+        }
+      } else if(l.type==='moment' && x > l.pos){
+        m -= l.mag;
       }
-      else if(l.type==='moment'&&x>l.pos)m-=l.mag;
     });
     return m;
   });
-  return{xs,Q,M,RA,RB,MA_fix};
+
+  return {xs, Q, M};
 }
 
-/* === DRAW HELPERS === */
-function drawArrow(ctx,x1,y1,x2,y2,color,hw=5){
-  const a=Math.atan2(y2-y1,x2-x1);
-  ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=1.6;
-  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(x2,y2);
-  ctx.lineTo(x2-hw*Math.cos(a-.42),y2-hw*Math.sin(a-.42));
-  ctx.lineTo(x2-hw*Math.cos(a+.42),y2-hw*Math.sin(a+.42));
-  ctx.closePath();ctx.fill();
-}
+/* ═══════════ RUN MNQ (Panel 1) ═══════════ */
+function runMNQ(){
+  const L = +document.getElementById('vL').value || 6;
+  // En el panel MNQ los apoyos siempre están en 0 y L
+  const posA=0, posB=L;
+  const {RA, RB} = calcReactions(posA, posB, mnq.supA, mnq.supB, mnq.loads);
+  const {xs, Q, M} = buildQM(L, posA, posB, RA, RB, mnq.loads);
 
-function getCanvasPixelWidth(cv){return cv.getBoundingClientRect().width||cv.width;}
+  drawBeamCV('cv-beam', L, [{pos:posA,type:mnq.supA,R:RA},{pos:posB,type:mnq.supB,R:RB}], mnq.loads);
+  drawDiag('cv-M', xs, M, C().ac, L);
+  drawDiag('cv-Q', xs, Q, C().gn, L);
 
-function drawDiagram(cv,xs,vals,color,L){
-  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
-  ctx.clearRect(0,0,W,H);
-  const pad={l:44,r:12,t:12,b:18},cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
-  const maxV=Math.max(...vals.map(Math.abs),.01),zero=pad.t+ch/2;
-  ctx.strokeStyle=C.border;ctx.lineWidth=.8;ctx.setLineDash([3,4]);
-  ctx.beginPath();ctx.moveTo(pad.l,zero);ctx.lineTo(pad.l+cw,zero);ctx.stroke();ctx.setLineDash([]);
-  ctx.beginPath();ctx.moveTo(pad.l,zero);
-  xs.forEach((x,i)=>{ctx.lineTo(pad.l+(x/L)*cw,zero-(vals[i]/maxV)*(ch/2)*.88);});
-  ctx.lineTo(pad.l+cw,zero);ctx.closePath();
-  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,color+'55');g.addColorStop(1,color+'10');
-  ctx.fillStyle=g;ctx.fill();
-  ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2;
-  xs.forEach((x,i)=>{const px=pad.l+(x/L)*cw,py=zero-(vals[i]/maxV)*(ch/2)*.88;i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);});
-  ctx.stroke();
-  ctx.font='10px DM Mono,monospace';ctx.fillStyle=C.ink3;ctx.textAlign='right';
-  [[maxV,pad.t],[0,zero],[-maxV,pad.t+ch]].forEach(([v,py])=>ctx.fillText(v.toFixed(1),pad.l-4,py+3));
-  ctx.textAlign='center';
-  [0,L/2,L].forEach(v=>ctx.fillText(v.toFixed(1)+'m',pad.l+(v/L)*cw,H-3));
-}
-
-function drawBeamCanvas(cv,L,supA,supB,loads,RA,RB){
-  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
-  ctx.clearRect(0,0,W,H);
-  const pad={l:52,r:52,t:32,b:42},cw=W-pad.l-pad.r,y0=pad.t+24;
-  const xOf=x=>pad.l+(x/L)*cw;
-  ctx.strokeStyle=C.ink;ctx.lineWidth=3.5;
-  ctx.beginPath();ctx.moveTo(pad.l,y0);ctx.lineTo(pad.l+cw,y0);ctx.stroke();
-  function drawSup(type,xPos,R){
-    const tx=xOf(xPos),col=SUP_COLOR[type]||C.ink;
-    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=1.6;
-    if(type==='simple'){
-      ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-10,y0+16);ctx.lineTo(tx+10,y0+16);ctx.closePath();ctx.stroke();
-      ctx.beginPath();ctx.moveTo(tx-13,y0+18);ctx.lineTo(tx+13,y0+18);ctx.stroke();
-    }else if(type==='pin'){
-      ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-9,y0+14);ctx.lineTo(tx+9,y0+14);ctx.closePath();ctx.stroke();
-      ctx.beginPath();ctx.arc(tx,y0+16,2,0,Math.PI*2);ctx.stroke();
-    }else if(type==='fixed'){
-      ctx.globalAlpha=.22;ctx.fillRect(tx-10,y0-10,8,20);ctx.globalAlpha=1;ctx.strokeRect(tx-10,y0-10,8,20);
-    }
-    if(R!==undefined&&Math.abs(R)>0.01){
-      drawArrow(ctx,tx,y0+32,tx,y0+2,C.green);
-      ctx.font='9px DM Mono,monospace';ctx.fillStyle=C.green;ctx.textAlign='center';
-      ctx.fillText(Math.abs(R).toFixed(1)+'kN',tx,y0+46);
-    }
-  }
-  drawSup(supA,0,RA);drawSup(supB,L,RB);
-  const maxMag=Math.max(...loads.map(l=>l.type==='point'?Math.abs(l.mag):l.type==='dist'?Math.max(Math.abs(l.qa||0),Math.abs(l.qb||0)):Math.abs(l.mag||0)),1);
-  loads.forEach(l=>{
-    if(l.type==='point'){
-      const tx=xOf(l.pos),al=Math.max(18,Math.abs(l.mag)/maxMag*30);
-      drawArrow(ctx,tx,y0-al,tx,y0-1,C.red);
-      ctx.font='9px DM Mono,monospace';ctx.fillStyle=C.red;ctx.textAlign='center';
-      ctx.fillText(l.mag.toFixed(1)+'kN',tx,y0-al-5);
-    }else if(l.type==='dist'){
-      const ax=xOf(l.a),bx=xOf(l.b),sA=Math.max(8,Math.abs(l.qa)/maxMag*26),sB=Math.max(8,Math.abs(l.qb)/maxMag*26);
-      ctx.strokeStyle=C.blue;ctx.fillStyle=C.blue+'22';ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(ax,y0-sA);ctx.lineTo(bx,y0-sB);ctx.lineTo(bx,y0);ctx.lineTo(ax,y0);ctx.closePath();ctx.fill();ctx.stroke();
-      const steps=Math.max(2,Math.floor((bx-ax)/13));
-      for(let s=0;s<=steps;s++){const fx=ax+s*(bx-ax)/steps,fy=y0-(sA+(sB-sA)*s/steps);drawArrow(ctx,fx,fy,fx,y0-1,C.blue,3);}
-      ctx.font='9px DM Mono,monospace';ctx.fillStyle=C.blue;ctx.textAlign='center';
-      ctx.fillText(l.qa.toFixed(1)+'kN/m',ax,y0-sA-5);
-    }else if(l.type==='moment'){
-      const tx=xOf(l.pos);ctx.strokeStyle=C.amber;ctx.lineWidth=2;
-      ctx.beginPath();ctx.arc(tx,y0,10,-Math.PI*.8,Math.PI*.8,l.mag<0);ctx.stroke();
-      ctx.font='9px DM Mono,monospace';ctx.fillStyle=C.amber;ctx.textAlign='center';
-      ctx.fillText(l.mag.toFixed(1)+'kN·m',tx,y0-18);
-    }
-  });
-}
-
-function updateDiagrams(){
-  const L=+document.getElementById('viga-L').value||6;
-  const{xs,Q,M,RA,RB}=calcBeam(L,st.supA,st.supB,st.loads);
-  drawBeamCanvas(document.getElementById('cvBeam'),L,st.supA,st.supB,st.loads,RA,RB);
-  drawDiagram(document.getElementById('cvM'),xs,M,C.red,L);
-  drawDiagram(document.getElementById('cvQ'),xs,Q,C.blue,L);
-  const cvN=document.getElementById('cvN'),ctxN=cvN.getContext('2d');
+  const cvN=document.getElementById('cv-N'); const ctxN=cvN.getContext('2d');
   ctxN.clearRect(0,0,cvN.width,cvN.height);
-  ctxN.font='11px Archivo,sans-serif';ctxN.fillStyle=C.ink3;ctxN.textAlign='center';
-  ctxN.fillText('N = 0.00 kN  (sin carga axial)',cvN.width/2,cvN.height/2+4);
-  const Mm=Math.max(...M),Mn=Math.min(...M),Qm=Math.max(...Q),Qn=Math.min(...Q);
-  document.getElementById('results-mnq').innerHTML=`
-    <div class="card"><div class="result-grid">
-      <div class="result-card green"><div class="result-label">RA (kN)</div><div class="result-val">${RA.toFixed(2)}</div></div>
-      <div class="result-card blue"><div class="result-label">RB (kN)</div><div class="result-val">${RB.toFixed(2)}</div></div>
-      <div class="result-card"><div class="result-label">M máx (kN·m)</div><div class="result-val">${Mm.toFixed(2)}</div></div>
-      <div class="result-card amber"><div class="result-label">M mín (kN·m)</div><div class="result-val">${Mn.toFixed(2)}</div></div>
-      <div class="result-card blue"><div class="result-label">Q+ (kN)</div><div class="result-val">${Qm.toFixed(2)}</div></div>
-      <div class="result-card"><div class="result-label">Q− (kN)</div><div class="result-val">${Qn.toFixed(2)}</div></div>
-    </div></div>`;
+  ctxN.font='16px Archivo,sans-serif'; ctxN.fillStyle=C().ink3; ctxN.textAlign='center';
+  ctxN.fillText('N = 0.00 kN  —  sin carga axial en esta configuración', cvN.width/2, cvN.height/2+5);
+
+  const Mx=Math.max(...M), Mn=Math.min(...M), Qx=Math.max(...Q), Qn=Math.min(...Q);
+  document.getElementById('mnq-res').innerHTML=resCards(RA,RB,posA,posB,Mx,Mn,Qx,Qn);
 }
 
-/* === BUILDER === */
-function addBldSupport(){
-  const pos=+document.getElementById('bld-sup-pos').value;
-  const type=document.getElementById('bld-sup-type').value;
-  const L=+document.getElementById('bld-L').value;
-  if(pos<0||pos>L)return alert('Posición fuera del rango');
-  if(bld.supports.some(s=>Math.abs(s.pos-pos)<0.01))return alert('Ya existe un apoyo en esa posición');
-  bld.supports.push({pos,type,id:Date.now()});
-  bld.supports.sort((a,b)=>a.pos-b.pos);
-  renderBldSup();buildRender();
-}
-function removeBldSupport(id){bld.supports=bld.supports.filter(s=>s.id!==id);renderBldSup();buildRender();}
-function renderBldSup(){
-  const div=document.getElementById('bld-sup-list');
-  if(!bld.supports.length){div.innerHTML='<div style="font-size:.73rem;color:var(--ink3)">Sin apoyos</div>';return;}
-  div.innerHTML=bld.supports.map(s=>`
-    <div class="load-item">
-      <div class="load-dot" style="background:${SUP_COLOR[s.type]||C.ink}"></div>
-      <span class="load-name"><span class="sup-label ${s.type==='simple'?'simple':s.type==='pin'?'pin':'fixed'}">${SUP_LABEL[s.type]}</span> @ ${s.pos}m</span>
-      <button class="btn btn-secondary btn-sm" onclick="removeBldSupport(${s.id})" style="padding:.12rem .38rem">✕</button>
-    </div>`).join('');
-}
-function addBldLoad(type){
-  if(type==='point')bld.loads.push({type,pos:+document.getElementById('blp-pos').value,mag:+document.getElementById('blp-mag').value,id:Date.now()});
-  else if(type==='dist')bld.loads.push({type,a:+document.getElementById('bld-qa-pos').value,b:+document.getElementById('bld-qb-pos').value,qa:+document.getElementById('bld-qa-val').value,qb:+document.getElementById('bld-qb-val').value,id:Date.now()});
-  else bld.loads.push({type:'moment',pos:+document.getElementById('blm-pos').value,mag:+document.getElementById('blm-mag').value,id:Date.now()});
-  renderBldLoads();buildRender();
-}
-function removeBldLoad(id){bld.loads=bld.loads.filter(l=>l.id!==id);renderBldLoads();buildRender();}
-function renderBldLoads(){
-  const div=document.getElementById('bld-load-list');
-  if(!bld.loads.length){div.innerHTML='<div style="font-size:.73rem;color:var(--ink3)">Sin cargas</div>';return;}
-  div.innerHTML=bld.loads.map(l=>{
-    const dot=l.type==='point'?'point':l.type==='dist'?'dist':'moment';
-    const lbl=l.type==='point'?`Puntual ${l.mag}kN @ ${l.pos}m`:l.type==='dist'?`Dist. ${l.qa}–${l.qb} kN/m [${l.a}–${l.b}m]`:`Momento ${l.mag}kN·m @ ${l.pos}m`;
-    return`<div class="load-item"><div class="load-dot ${dot}"></div><span class="load-name">${lbl}</span><button class="btn btn-secondary btn-sm" onclick="removeBldLoad(${l.id})" style="padding:.12rem .38rem">✕</button></div>`;
-  }).join('');
-}
-
-function buildRender(){
-  const L=+document.getElementById('bld-L').value||8;
-  const cv=document.getElementById('cvBld'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+/* ═══════════ BUILDER ═══════════ */
+function bRender(){
+  const L = +document.getElementById('bL').value || 8;
+  const cv=document.getElementById('cv-bld'), ctx=cv.getContext('2d'), W=cv.width, H=cv.height, Cl=C();
   ctx.clearRect(0,0,W,H);
-  const pad={l:46,r:46,t:36,b:44},cw=W-pad.l-pad.r,y0=pad.t+24;
-  const xOf=x=>pad.l+(x/L)*cw;
-  ctx.strokeStyle=C.ink;ctx.lineWidth=3.5;
-  ctx.beginPath();ctx.moveTo(pad.l,y0);ctx.lineTo(pad.l+cw,y0);ctx.stroke();
-  ctx.strokeStyle=C.ink3;ctx.lineWidth=.7;ctx.setLineDash([2,3]);
-  ctx.beginPath();ctx.moveTo(pad.l,y0+26);ctx.lineTo(pad.l+cw,y0+26);ctx.stroke();ctx.setLineDash([]);
-  ctx.font='9px DM Mono,monospace';ctx.fillStyle=C.ink3;ctx.textAlign='center';
-  ctx.fillText('L = '+L.toFixed(1)+' m',pad.l+cw/2,y0+40);
+  const pl=54,pr=54,pt=42,pb=52, cw=W-pl-pr, y0=pt+22;
+  const xOf = x => pl+(x/L)*cw;
+  const SCOL={simple:Cl.gn, pin:Cl.ac, fixed:Cl.rd};
+
+  // Beam
+  ctx.strokeStyle=Cl.ink; ctx.lineWidth=4;
+  ctx.beginPath(); ctx.moveTo(pl,y0); ctx.lineTo(pl+cw,y0); ctx.stroke();
+
+  // Dimension
+  ctx.strokeStyle=Cl.ink3; ctx.lineWidth=.8; ctx.setLineDash([3,4]);
+  ctx.beginPath(); ctx.moveTo(pl,y0+72); ctx.lineTo(pl+cw,y0+72); ctx.stroke(); ctx.setLineDash([]);
+  ctx.font='14px DM Mono,monospace'; ctx.fillStyle=Cl.ink3; ctx.textAlign='center';
+  ctx.fillText('L = '+L.toFixed(1)+' m', pl+cw/2, y0+64);
+
+  // X ticks
+  const seg=Math.min(10, Math.ceil(L*2));
+  for(let i=0;i<=seg;i++){
+    const fx=pl+(i/seg)*cw;
+    ctx.strokeStyle=Cl.br; ctx.lineWidth=.8;
+    ctx.beginPath(); ctx.moveTo(fx,y0-3); ctx.lineTo(fx,y0+3); ctx.stroke();
+    ctx.font='14px DM Mono,monospace'; ctx.fillStyle=Cl.ink3; ctx.textAlign='center';
+    ctx.fillText((i*L/seg).toFixed(1),fx,y0+92);
+  }
+
+  // Supports
   bld.supports.forEach(s=>{
-    const tx=xOf(s.pos),col=SUP_COLOR[s.type]||C.ink;
-    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=1.6;
-    if(s.type==='simple'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-10,y0+16);ctx.lineTo(tx+10,y0+16);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(tx-13,y0+18);ctx.lineTo(tx+13,y0+18);ctx.stroke();}
-    else if(s.type==='pin'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-9,y0+14);ctx.lineTo(tx+9,y0+14);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.arc(tx,y0+16,2,0,Math.PI*2);ctx.stroke();}
-    else if(s.type==='fixed'){ctx.globalAlpha=.22;ctx.fillRect(tx-10,y0-10,8,20);ctx.globalAlpha=1;ctx.strokeRect(tx-10,y0-10,8,20);}
-    ctx.font='9px DM Mono,monospace';ctx.fillStyle=col;ctx.textAlign='center';ctx.fillText(s.pos.toFixed(1)+'m',tx,y0-15);
+    const tx=xOf(s.pos), col=SCOL[s.type]||Cl.ink;
+    ctx.save(); ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=1.8;
+    if(s.type==='simple'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-11,y0+18);ctx.lineTo(tx+11,y0+18);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(tx-14,y0+20);ctx.lineTo(tx+14,y0+20);ctx.stroke();}
+    else if(s.type==='pin'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-10,y0+16);ctx.lineTo(tx+10,y0+16);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.arc(tx,y0+18,2.5,0,Math.PI*2);ctx.stroke();}
+    else if(s.type==='fixed'){ctx.globalAlpha=.22;ctx.fillRect(tx-11,y0-12,9,24);ctx.globalAlpha=1;ctx.strokeRect(tx-11,y0-12,9,24);}
+    ctx.font='bold 14px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(s.pos.toFixed(1)+'m', tx, y0-16);
+    ctx.restore();
   });
+
+  // Loads
   const maxMag=Math.max(...bld.loads.map(l=>l.type==='point'?Math.abs(l.mag):l.type==='dist'?Math.max(Math.abs(l.qa||0),Math.abs(l.qb||0)):Math.abs(l.mag||0)),1);
   bld.loads.forEach(l=>{
-    if(l.type==='point'){const tx=xOf(l.pos),al=Math.max(14,Math.abs(l.mag)/maxMag*26);drawArrow(ctx,tx,y0-al,tx,y0-1,C.red);ctx.font='9px DM Mono,monospace';ctx.fillStyle=C.red;ctx.textAlign='center';ctx.fillText(l.mag.toFixed(0)+'kN',tx,y0-al-5);}
-    else if(l.type==='dist'){const ax=xOf(l.a),bx=xOf(l.b),sA=Math.max(7,Math.abs(l.qa)/maxMag*22),sB=Math.max(7,Math.abs(l.qb)/maxMag*22);ctx.strokeStyle=C.blue;ctx.fillStyle=C.blue+'22';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ax,y0-sA);ctx.lineTo(bx,y0-sB);ctx.lineTo(bx,y0);ctx.lineTo(ax,y0);ctx.closePath();ctx.fill();ctx.stroke();const steps=Math.max(2,Math.floor((bx-ax)/13));for(let i=0;i<=steps;i++){const fx=ax+i*(bx-ax)/steps,fy=y0-(sA+(sB-sA)*i/steps);drawArrow(ctx,fx,fy,fx,y0-1,C.blue,3);}}
-    else if(l.type==='moment'){const tx=xOf(l.pos);ctx.strokeStyle=C.amber;ctx.lineWidth=2;ctx.beginPath();ctx.arc(tx,y0,9,-Math.PI*.75,Math.PI*.75,l.mag<0);ctx.stroke();}
+    const Cl2=C();
+    if(l.type==='point'){
+      const tx=xOf(l.pos),al=Math.max(16,Math.abs(l.mag)/maxMag*28);
+      arw(ctx,tx,y0-al,tx,y0-1,Cl2.ac);
+      ctx.font='bold 14px DM Mono,monospace'; ctx.fillStyle=Cl2.ac; ctx.textAlign='center';
+      ctx.fillText(l.mag.toFixed(0)+'kN',tx,y0-al-5);
+    } else if(l.type==='dist'){
+      const ax=xOf(l.a),bx=xOf(l.b),sA=Math.max(9,Math.abs(l.qa)/maxMag*24),sB=Math.max(9,Math.abs(l.qb)/maxMag*24);
+      ctx.save(); ctx.strokeStyle=Cl2.ac; ctx.fillStyle=Cl2.ac+'22'; ctx.lineWidth=1.1;
+      ctx.beginPath();ctx.moveTo(ax,y0-sA);ctx.lineTo(bx,y0-sB);ctx.lineTo(bx,y0);ctx.lineTo(ax,y0);ctx.closePath();ctx.fill();ctx.stroke();
+      const steps=Math.max(2,Math.floor((bx-ax)/16));
+      for(let i=0;i<=steps;i++){arw(ctx,ax+i*(bx-ax)/steps,y0-(sA+(sB-sA)*i/steps)+1,ax+i*(bx-ax)/steps,y0-1,Cl2.ac,3);}
+      ctx.restore();
+    } else {
+      const tx=xOf(l.pos); ctx.save(); ctx.strokeStyle=Cl2.am; ctx.lineWidth=2.2;
+      ctx.beginPath(); ctx.arc(tx,y0,11,-Math.PI*.8,Math.PI*.8,l.mag<0); ctx.stroke(); ctx.restore();
+    }
   });
 }
 
 function calcBuilder(){
-  const L=+document.getElementById('bld-L').value||8;
-  if(bld.supports.length<2)return alert('Necesitás al menos 2 apoyos para calcular');
-  const sups=bld.supports,supA=sups[0].type,supB=sups[sups.length-1].type;
-  const{xs,Q,M,RA,RB}=calcBeam(L,supA,supB,bld.loads);
-  drawDiagram(document.getElementById('cvBldM'),xs,M,C.red,L);
-  drawDiagram(document.getElementById('cvBldQ'),xs,Q,C.blue,L);
-  buildRender();
-  const cv=document.getElementById('cvBld'),ctx=cv.getContext('2d');
-  const pad={l:46,r:46,t:36,b:44},cw=cv.width-pad.l-pad.r,y0=pad.t+24;
-  const xOf=x=>pad.l+(x/L)*cw;
-  [[sups[0],RA],[sups[sups.length-1],RB]].forEach(([s,R])=>{
-    const tx=xOf(s.pos);drawArrow(ctx,tx,y0+32,tx,y0+2,C.green);
-    ctx.font='9px DM Mono,monospace';ctx.fillStyle=C.green;ctx.textAlign='center';ctx.fillText(R.toFixed(1)+'kN',tx,y0+46);
+  const L = +document.getElementById('bL').value || 8;
+  if(bld.supports.length < 2) return alert('Necesitás al menos 2 apoyos para calcular');
+  const sups = bld.supports;
+  const sA = sups[0], sB = sups[sups.length-1];
+  const posA=sA.pos, posB=sB.pos;
+  if(Math.abs(posB-posA)<0.01) return alert('Los apoyos extremos deben estar en posiciones distintas');
+
+  // Calcular reacciones con cargas en coordenadas GLOBALES (0..L)
+  const {RA, RB} = calcReactions(posA, posB, sA.type, sB.type, bld.loads);
+
+  // Construir diagramas en coordenadas GLOBALES 0..L
+  const {xs, Q, M} = buildQM(L, posA, posB, RA, RB, bld.loads);
+
+  drawDiag('cv-bM', xs, M, C().ac, L);
+  drawDiag('cv-bQ', xs, Q, C().gn, L);
+
+  // Redibujar estructura con reacciones
+  bRender();
+  const cv=document.getElementById('cv-bld'), ctx=cv.getContext('2d');
+  const pl=54,pr=54,cw=cv.width-pl-pr, y0=42+22;
+  const xOf = x => pl+(x/L)*cw;
+  [[posA,RA],[posB,RB]].forEach(([xp,R])=>{
+    arw(ctx, xOf(xp), y0+34, xOf(xp), y0+2, C().gn);
+    ctx.font='bold 14px DM Mono,monospace'; ctx.fillStyle=C().gn; ctx.textAlign='center';
+    ctx.fillText(R.toFixed(2)+'kN', xOf(xp), y0+48);
   });
-  document.getElementById('card-reactions').style.display='block';
-  document.getElementById('card-extremes').style.display='block';
-  document.getElementById('bld-reactions').innerHTML=`<div class="result-grid">
-    <div class="result-card green"><div class="result-label">R @ ${sups[0].pos}m (kN)</div><div class="result-val">${RA.toFixed(2)}</div></div>
-    <div class="result-card blue"><div class="result-label">R @ ${sups[sups.length-1].pos}m (kN)</div><div class="result-val">${RB.toFixed(2)}</div></div>
-  </div>`;
-  const Mm=Math.max(...M),Mn=Math.min(...M),Qm=Math.max(...Q),Qn=Math.min(...Q);
-  document.getElementById('bld-extremes').innerHTML=`<div class="result-grid">
-    <div class="result-card"><div class="result-label">M máx (kN·m)</div><div class="result-val">${Mm.toFixed(2)}</div></div>
-    <div class="result-card amber"><div class="result-label">M mín (kN·m)</div><div class="result-val">${Mn.toFixed(2)}</div></div>
-    <div class="result-card blue"><div class="result-label">Q+ máx (kN)</div><div class="result-val">${Qm.toFixed(2)}</div></div>
-    <div class="result-card"><div class="result-label">Q− mín (kN)</div><div class="result-val">${Qn.toFixed(2)}</div></div>
-    <div class="result-card green"><div class="result-label">N (kN)</div><div class="result-val">0.00</div></div>
-  </div>`;
+
+  const Mx=Math.max(...M), Mn=Math.min(...M), Qx=Math.max(...Q), Qn=Math.min(...Q);
+  document.getElementById('b-res').innerHTML=resCards(RA,RB,posA,posB,Mx,Mn,Qx,Qn);
 }
 
 function resetBuilder(){
-  bld.supports=[];bld.loads=[];bld.loadMode=null;
-  ['point','dist','moment'].forEach(m=>{const el=document.getElementById('bld-load-form-'+m);if(el)el.style.display='none';});
-  renderBldSup();renderBldLoads();buildRender();
-  ['card-reactions','card-extremes'].forEach(id=>document.getElementById(id).style.display='none');
-  ['cvBldM','cvBldQ'].forEach(id=>{const cv=document.getElementById(id);cv.getContext('2d').clearRect(0,0,cv.width,cv.height);});
+  bld.supports=[]; bld.loads=[];
+  ['b-fp','b-fd','b-fm'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  renderBSups(); renderLL('b'); bRender();
+  document.getElementById('b-res').innerHTML='';
+  ['cv-bM','cv-bQ'].forEach(id=>{const cv=document.getElementById(id);if(cv)cv.getContext('2d').clearRect(0,0,cv.width,cv.height);});
 }
 
-/* === INIT === */
-renderLL();updateDiagrams();buildRender();
+/* ═══════════ DRAWING ═══════════ */
+function arw(ctx,x1,y1,x2,y2,col,hw=5.5){
+  const a=Math.atan2(y2-y1,x2-x1);
+  ctx.save(); ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=1.8;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-hw*Math.cos(a-.42),y2-hw*Math.sin(a-.42));
+  ctx.lineTo(x2-hw*Math.cos(a+.42),y2-hw*Math.sin(a+.42));
+  ctx.closePath(); ctx.fill(); ctx.restore();
+}
+
+function drawDiag(id, xs, vals, color, L){
+  const cv=document.getElementById(id); if(!cv) return;
+  const ctx=cv.getContext('2d'), W=cv.width, H=cv.height, Cl=C();
+  ctx.clearRect(0,0,W,H);
+  const pl=50,pr=12,pt=16,pb=22, cw=W-pl-pr, ch=H-pt-pb;
+  const maxV = Math.max(...vals.map(Math.abs), .01);
+  const zero = pt + ch/2;
+
+  // Zero line
+  ctx.strokeStyle=Cl.br; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(pl,zero); ctx.lineTo(pl+cw,zero); ctx.stroke(); ctx.setLineDash([]);
+
+  // Fill — positive values go DOWN (structural convention)
+  ctx.beginPath(); ctx.moveTo(pl+(xs[0]/L)*cw, zero);
+  xs.forEach((x,i)=> ctx.lineTo(pl+(x/L)*cw, zero + (vals[i]/maxV)*(ch/2)*.88));
+  ctx.lineTo(pl+(xs[xs.length-1]/L)*cw, zero); ctx.closePath();
+  const g=ctx.createLinearGradient(0,zero,0,zero+ch/2);
+  g.addColorStop(0,color+'70'); g.addColorStop(1,color+'10');
+  ctx.fillStyle=g; ctx.fill();
+
+  // Curve
+  ctx.beginPath(); ctx.strokeStyle=color; ctx.lineWidth=2.2;
+  xs.forEach((x,i)=>{ const px=pl+(x/L)*cw, py=zero+(vals[i]/maxV)*(ch/2)*.88; i===0?ctx.moveTo(px,py):ctx.lineTo(px,py); });
+  ctx.stroke();
+
+  // Y labels — note: positive is DOWN, so labels are inverted
+  ctx.font='14px DM Mono,monospace'; ctx.fillStyle=Cl.ink3; ctx.textAlign='right';
+  ctx.fillText('−'+maxV.toFixed(2), pl-4, pt+5);
+  ctx.fillText('0', pl-4, zero+4);
+  ctx.fillText('+'+maxV.toFixed(2), pl-4, pt+ch+2);
+
+  // X labels
+  ctx.textAlign='center';
+  [0,.25,.5,.75,1].forEach(t=> ctx.fillText((t*L).toFixed(2)+'m', pl+t*cw, H-3));
+}
+
+function drawBeamCV(id, L, supports, loads){
+  const cv=document.getElementById(id); if(!cv) return;
+  const ctx=cv.getContext('2d'), W=cv.width, H=cv.height, Cl=C();
+  ctx.clearRect(0,0,W,H);
+  const pl=54,pr=54,pt=34,pb=46, cw=W-pl-pr, y0=pt+24;
+  const xOf = x => pl+(x/L)*cw;
+  const SCOL={simple:Cl.gn, pin:Cl.ac, fixed:Cl.rd};
+
+  // Beam
+  ctx.strokeStyle=Cl.ink; ctx.lineWidth=4;
+  ctx.beginPath(); ctx.moveTo(pl,y0); ctx.lineTo(pl+cw,y0); ctx.stroke();
+
+  // Supports
+  supports.forEach(s=>{
+    const tx=xOf(s.pos), col=SCOL[s.type]||Cl.ink;
+    ctx.save(); ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=1.8;
+    if(s.type==='simple'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-11,y0+18);ctx.lineTo(tx+11,y0+18);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(tx-14,y0+20);ctx.lineTo(tx+14,y0+20);ctx.stroke();}
+    else if(s.type==='pin'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-10,y0+16);ctx.lineTo(tx+10,y0+16);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.arc(tx,y0+18,2.5,0,Math.PI*2);ctx.stroke();}
+    else if(s.type==='fixed'){ctx.globalAlpha=.22;ctx.fillRect(tx-11,y0-12,9,24);ctx.globalAlpha=1;ctx.strokeRect(tx-11,y0-12,9,24);}
+    if(Math.abs(s.R)>0.001){
+      arw(ctx, tx, y0+34, tx, y0+2, Cl.gn);
+      ctx.font='bold 14px DM Mono,monospace'; ctx.fillStyle=Cl.gn; ctx.textAlign='center';
+      ctx.fillText(s.R.toFixed(2)+'kN', tx, y0+64);
+    }
+    ctx.restore();
+  });
+
+  // Loads
+  const maxMag=Math.max(...loads.map(l=>l.type==='point'?Math.abs(l.mag):l.type==='dist'?Math.max(Math.abs(l.qa||0),Math.abs(l.qb||0)):Math.abs(l.mag||0)),1);
+  loads.forEach(l=>{
+    if(l.type==='point'){
+      const tx=xOf(l.pos), al=Math.max(18,Math.abs(l.mag)/maxMag*30);
+      arw(ctx,tx,y0-al,tx,y0-1,Cl.ac);
+      ctx.font='bold 14px DM Mono,monospace'; ctx.fillStyle=Cl.ac; ctx.textAlign='center';
+      ctx.fillText(l.mag.toFixed(1)+'kN',tx,y0-al-5);
+    } else if(l.type==='dist'){
+      const ax=xOf(l.a),bx=xOf(l.b),sA=Math.max(10,Math.abs(l.qa)/maxMag*26),sB=Math.max(10,Math.abs(l.qb)/maxMag*26);
+      ctx.save(); ctx.strokeStyle=Cl.ac; ctx.fillStyle=Cl.ac+'22'; ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.moveTo(ax,y0-sA);ctx.lineTo(bx,y0-sB);ctx.lineTo(bx,y0);ctx.lineTo(ax,y0);ctx.closePath();ctx.fill();ctx.stroke();
+      const steps=Math.max(2,Math.floor((bx-ax)/14));
+      for(let i=0;i<=steps;i++) arw(ctx,ax+i*(bx-ax)/steps,y0-(sA+(sB-sA)*i/steps)+1,ax+i*(bx-ax)/steps,y0-1,Cl.ac,3);
+      ctx.font='bold 14px DM Mono,monospace'; ctx.fillStyle=Cl.ac; ctx.textAlign='center';
+      ctx.fillText(l.qa.toFixed(1)+'kN/m',ax,y0-sA-5);
+      if(Math.abs(l.qb-l.qa)>.01) ctx.fillText(l.qb.toFixed(1)+'kN/m',bx,y0-sB-5);
+      ctx.restore();
+    } else {
+      const tx=xOf(l.pos); ctx.save(); ctx.strokeStyle=Cl.am; ctx.lineWidth=2.2;
+      ctx.beginPath(); ctx.arc(tx,y0,11,-Math.PI*.8,Math.PI*.8,l.mag<0); ctx.stroke(); ctx.restore();
+    }
+  });
+}
+
+function resCards(RA,RB,posA,posB,Mx,Mn,Qx,Qn){
+  return `<div class="card"><div class="rg">
+    <div class="rc g"><div class="rl">R @ ${posA.toFixed(1)}m (kN)</div><div class="rv">${RA.toFixed(2)}</div></div>
+    <div class="rc"><div class="rl">R @ ${posB.toFixed(1)}m (kN)</div><div class="rv">${RB.toFixed(2)}</div></div>
+    <div class="rc r"><div class="rl">M máx (kN·m)</div><div class="rv">${Mx.toFixed(2)}</div></div>
+    <div class="rc a"><div class="rl">M mín (kN·m)</div><div class="rv">${Mn.toFixed(2)}</div></div>
+    <div class="rc"><div class="rl">Q+ (kN)</div><div class="rv">${Qx.toFixed(2)}</div></div>
+    <div class="rc g"><div class="rl">Q− (kN)</div><div class="rv">${Qn.toFixed(2)}</div></div>
+  </div></div>`;
+}
+
+/* ═══════════ INIT ═══════════ */
+renderLL('mnq'); renderLL('b'); renderBSups(); runMNQ(); bRender();
 </script>
 </body>
 </html>
