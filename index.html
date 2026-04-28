@@ -662,26 +662,33 @@ function resetBuilder(){
 /* ═══════════ DRAWING ═══════════ */
 function fixDPI(cv) {
   const dpr = window.devicePixelRatio || 2; 
-  // Leemos el ancho real que CSS le dio en pantalla
-  const W = cv.clientWidth;
   
-  // Guardamos la altura original para no deformarla
+  // 1. Le decimos que fluya y ocupe el 100% de la tarjeta contenedora
+  cv.style.width = '100%'; 
+  
+  // 2. Leemos el ancho real en píxeles que le asignó el navegador
+  let W = cv.clientWidth;
+  
+  // 3. Si da 0 (porque la pestaña está oculta), le damos 700 temporalmente 
+  // para que las matemáticas no se rompan por dividir por cero.
+  if (W === 0) W = 700;
+
+  // 4. Recuperamos y mantenemos la altura fija original
   let H = cv.getAttribute('data-h');
   if (!H) {
     H = cv.getAttribute('height');
-    cv.setAttribute('data-h', H); // Lo guardamos como atributo seguro
+    cv.setAttribute('data-h', H);
   }
   H = +H;
 
+  // 5. Aplicamos la densidad de píxeles HD
   cv.width = W * dpr;
   cv.height = H * dpr;
-  
-  // Fijamos el tamaño CSS
-  cv.style.width = W + 'px';
   cv.style.height = H + 'px';
 
   const ctx = cv.getContext('2d');
   ctx.scale(dpr, dpr);
+  
   return { W, H };
 }
 
