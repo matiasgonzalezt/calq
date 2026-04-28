@@ -28,9 +28,9 @@
 body{font-family:'Archivo',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;font-size:16px;line-height:1.5;transition:background .2s,color .2s}
 
 .header{background:var(--bg2);border-bottom:1px solid var(--br);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-shrink:0}
-.logo{font-size:2rem;font-weight:700;letter-spacing:-.03em}
+.logo{font-size:2rem;font-weight:900}
 .logo em{font-style:normal;color:var(--ac)}
-.logo-sub{font-size:1rem;font-weight:400;letter-spacing:0em;text-transform:lowercase;color:var(--ink3);margin-left:.5rem}
+.logo-sub{font-size:1rem;font-weight:100;letter-spacing:0em;text-transform:lowercase;color:var(--ink3);margin-left:.5rem}
 .theme-btn{padding:.5rem .85rem;border-radius:var(--rs);border:1px solid var(--br);background:var(--bg3);color:var(--ink2);font-family:'Archivo',sans-serif;font-size:.8rem;font-weight:500;cursor:pointer;transition:all .15s}
 .theme-btn:hover{background:var(--br)}
 
@@ -102,6 +102,19 @@ canvas{display:block;width:100%;height:auto;border-radius:6px}
 .fa:hover{border-color:var(--ac);color:var(--ac);background:var(--ac-l)}
 .fa.mp:hover{border-color:var(--gn);color:var(--gn);background:var(--gn-l)}
 .fsup{font-size:.8rem;color:var(--ink3);margin-bottom:.5rem}
+
+/* Limitar el ancho en pantallas grandes */
+@media (min-width: 1200px) {
+  body {
+    max-width: 1000px; /* Ancho máximo de la calculadora */
+    margin: 0 auto;    /* Centra el contenedor en la pantalla */
+    
+    /* Estos dos atributos son opcionales, pero le dan un efecto de "aplicación enmarcada" muy elegante: */
+    border-left: 1px solid var(--br);
+    border-right: 1px solid var(--br);
+    box-shadow: 0 0 40px rgba(0,0,0,0.05);
+  }
+}
 </style>
 </head>
 <body id="app">
@@ -268,7 +281,7 @@ canvas{display:block;width:100%;height:auto;border-radius:6px}
 
 <footer class="footer">
   <div class="fn">Desarrollado por Matías González T.</div>
-  <div class="fs">calq v1.1 &nbsp;·&nbsp; Calculadora Estructural para Arquitectos</div>
+  <div class="fs">calq v1.2 &nbsp;·&nbsp; Calculadora Estructural para Arquitectos</div>
   <div class="fsup">¿Te resultó útil? Podés ayudarme a seguir con otros proyectos acá:</div>
   <div class="fl">
     <a class="fa" href="https://linkedin.com/in/matiasgonzalezt/" target="_blank" rel="noopener">
