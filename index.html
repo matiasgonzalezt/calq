@@ -43,7 +43,7 @@ body{font-family:'Archivo',sans-serif;background:var(--bg);color:var(--ink);min-
 .tab:hover:not(.active){color:var(--ink)}
 
 .panel{display:none}.panel.active{display:block}
-.layout{display:grid;grid-template-columns:300px 1fr;gap:1.25rem;padding:1.25rem 1.5rem;align-items:start}
+.layout{display:grid;grid-template-columns:1fr 2fr;gap:1.25rem;padding:1.25rem 1.5rem;align-items:start}
 @media(max-width:720px){.layout{grid-template-columns:1fr;padding:.85rem}.col-inputs{order:1}.col-outputs{order:2}}
 
 .card{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:.85rem;box-shadow:var(--sh)}
@@ -544,10 +544,12 @@ function runMNQ(){
   drawDiag('cv-M', xs, M, C().ac, L);
   drawDiag('cv-Q', xs, Q, C().gn, L);
 
-  const cvN=document.getElementById('cv-N'); const ctxN=cvN.getContext('2d');
-  ctxN.clearRect(0,0,cvN.width,cvN.height);
-  ctxN.font='16px Archivo,sans-serif'; ctxN.fillStyle=C().ink3; ctxN.textAlign='center';
-  ctxN.fillText('N = 0.00 kN  —  sin carga axial en esta configuración', cvN.width/2, cvN.height/2+5);
+  const cvN=document.getElementById('cv-N'); 
+  const {W: wN, H: hN} = fixDPI(cvN); 
+  const ctxN=cvN.getContext('2d');
+  ctxN.clearRect(0,0,wN,hN);
+  ctxN.font='13px Archivo,sans-serif'; ctxN.fillStyle=C().ink3; ctxN.textAlign='center';
+  ctxN.fillText('N = 0.00 kN  —  sin carga axial en esta configuración', wN/2, hN/2+5);
 
   const Mx=Math.max(...M), Mn=Math.min(...M), Qx=Math.max(...Q), Qn=Math.min(...Q);
   document.getElementById('mnq-res').innerHTML=resCards(RA,RB,posA,posB,Mx,Mn,Qx,Qn);
@@ -556,7 +558,7 @@ function runMNQ(){
 /* ═══════════ BUILDER ═══════════ */
 function bRender(){
   const L = +document.getElementById('bL').value || 8;
-  const cv=document.getElementById('cv-bld'), ctx=cv.getContext('2d'), W=cv.width, H=cv.height, Cl=C();
+  const cv=document.getElementById('cv-bld'); const {W, H} = fixDPI(cv); const ctx=cv.getContext('2d'); const Cl=C();
   ctx.clearRect(0,0,W,H);
   const pl=54,pr=54,pt=42,pb=52, cw=W-pl-pr, y0=pt+22;
   const xOf = x => pl+(x/L)*cw;
@@ -637,7 +639,7 @@ function calcBuilder(){
   // Redibujar estructura con reacciones
   bRender();
   const cv=document.getElementById('cv-bld'), ctx=cv.getContext('2d');
-  const pl=54,pr=54,cw=cv.width-pl-pr, y0=42+22;
+  const cw=cv.clientWidth-pl-pr, y0=40+22;
   const xOf = x => pl+(x/L)*cw;
   [[posA,RA],[posB,RB]].forEach(([xp,R])=>{
     arw(ctx, xOf(xp), y0+34, xOf(xp), y0+2, C().gn);
@@ -658,6 +660,31 @@ function resetBuilder(){
 }
 
 /* ═══════════ DRAWING ═══════════ */
+function fixDPI(cv) {
+  const dpr = window.devicePixelRatio || 2; 
+  // Leemos el ancho real que CSS le dio en pantalla
+  const W = cv.clientWidth;
+  
+  // Guardamos la altura original para no deformarla
+  let H = cv.getAttribute('data-h');
+  if (!H) {
+    H = cv.getAttribute('height');
+    cv.setAttribute('data-h', H); // Lo guardamos como atributo seguro
+  }
+  H = +H;
+
+  cv.width = W * dpr;
+  cv.height = H * dpr;
+  
+  // Fijamos el tamaño CSS
+  cv.style.width = W + 'px';
+  cv.style.height = H + 'px';
+
+  const ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { W, H };
+}
+
 function arw(ctx,x1,y1,x2,y2,col,hw=5.5){
   const a=Math.atan2(y2-y1,x2-x1);
   ctx.save(); ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=1.8;
@@ -670,7 +697,7 @@ function arw(ctx,x1,y1,x2,y2,col,hw=5.5){
 
 function drawDiag(id, xs, vals, color, L){
   const cv=document.getElementById(id); if(!cv) return;
-  const ctx=cv.getContext('2d'), W=cv.width, H=cv.height, Cl=C();
+  const {W, H} = fixDPI(cv); const ctx = cv.getContext('2d'); const Cl = C();
   ctx.clearRect(0,0,W,H);
   const pl=50,pr=12,pt=16,pb=22, cw=W-pl-pr, ch=H-pt-pb;
   const maxV = Math.max(...vals.map(Math.abs), .01);
@@ -706,7 +733,7 @@ function drawDiag(id, xs, vals, color, L){
 
 function drawBeamCV(id, L, supports, loads){
   const cv=document.getElementById(id); if(!cv) return;
-  const ctx=cv.getContext('2d'), W=cv.width, H=cv.height, Cl=C();
+  const {W, H} = fixDPI(cv); const ctx = cv.getContext('2d'); const Cl = C();
   ctx.clearRect(0,0,W,H);
   const pl=54,pr=54,pt=34,pb=46, cw=W-pl-pr, y0=pt+24;
   const xOf = x => pl+(x/L)*cw;
@@ -768,6 +795,22 @@ function resCards(RA,RB,posA,posB,Mx,Mn,Qx,Qn){
 }
 
 /* ═══════════ INIT ═══════════ */
+// Recalcular gráficos si cambia el tamaño de la pantalla
+window.addEventListener('resize', () => {
+  // Verificamos qué pestaña está activa
+  const isMnqActive = document.getElementById('panel-mnq').classList.contains('active');
+  
+  if (isMnqActive) {
+    runMNQ();
+  } else {
+    // Si estamos en Constructor y ya hay resultados, calculamos. Si no, solo dibujamos la viga.
+    if (document.getElementById('b-res').innerHTML !== '') {
+      calcBuilder();
+    } else {
+      bRender();
+    }
+  }
+});
 renderLL('mnq'); renderLL('b'); renderBSups(); runMNQ(); bRender();
 </script>
 </body>
