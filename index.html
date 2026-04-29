@@ -3,11 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>calq</title>
-  
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌌</text></svg>">
-
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -139,6 +134,7 @@ canvas{display:block;width:100%;height:auto;border-radius:6px}
 <div class="tabs">
   <div class="tab active" onclick="switchTab('mnq')">Diagramas MNQ</div>
   <div class="tab" onclick="switchTab('builder')">Constructor de Estructuras</div>
+  <div class="tab" onclick="switchTab('res')">Resultante</div>
 </div>
 
 <!-- ═══════ PANEL MNQ ═══════ -->
@@ -202,7 +198,7 @@ canvas{display:block;width:100%;height:auto;border-radius:6px}
       <button class="btn btn-p" style="width:100%;padding:.6rem 1rem;font-size:.9rem" onclick="runMNQ()">Calcular y Graficar</button>
     </div>
     <div class="col-outputs">
-      <div class="card"><div class="slbl">Estructura con cargas</div><canvas id="cv-beam" width="700" height="132"></canvas></div>
+      <div class="card"><div class="slbl">Estructura con cargas</div><canvas id="cv-beam" width="700" height="130"></canvas></div>
       <div class="card"><div class="slbl">Momentos — M (kN·m)</div><canvas id="cv-M" width="700" height="130"></canvas></div>
       <div class="card"><div class="slbl">Corte — Q (kN)</div><canvas id="cv-Q" width="700" height="130"></canvas></div>
       <div class="card"><div class="slbl">Axial — N (kN)</div><canvas id="cv-N" width="700" height="58"></canvas></div>
@@ -276,7 +272,7 @@ canvas{display:block;width:100%;height:auto;border-radius:6px}
       </div>
     </div>
     <div class="col-outputs">
-      <div class="card"><div class="slbl">Vista de la estructura</div><canvas id="cv-bld" width="700" height="180"></canvas></div>
+      <div class="card"><div class="slbl">Vista de la estructura</div><canvas id="cv-bld" width="700" height="200"></canvas></div>
       <div class="card"><div class="slbl">Momentos — M (kN·m)</div><canvas id="cv-bM" width="700" height="130"></canvas></div>
       <div class="card"><div class="slbl">Corte — Q (kN)</div><canvas id="cv-bQ" width="700" height="130"></canvas></div>
       <div id="b-res"></div>
@@ -284,9 +280,37 @@ canvas{display:block;width:100%;height:auto;border-radius:6px}
   </div>
 </div>
 
+<div class="panel" id="panel-res">
+  <div class="layout">
+    <div class="col-inputs">
+      <div class="card">
+        <div class="slbl">Agregar Fuerza (Plano XY)</div>
+        <div class="g2" style="margin-bottom:.45rem">
+          <div><label>Magnitud (kN)</label><input type="number" id="rf-mag" value="10" step="1" min="0.1"></div>
+          <div><label>Ángulo (°)</label><input type="number" id="rf-ang" value="45" step="1"></div>
+        </div>
+        <div class="g2" style="margin-bottom:.45rem">
+          <div><label>Posición X (m)</label><input type="number" id="rf-x" value="0" step="0.5"></div>
+          <div><label>Posición Y (m)</label><input type="number" id="rf-y" value="0" step="0.5"></div>
+        </div>
+        <button class="btn btn-p btn-sm" style="width:100%" onclick="addRForce()">Agregar Fuerza</button>
+        <div id="rf-ll" style="margin-top:.6rem"></div>
+      </div>
+      <div style="display:flex;gap:.6rem">
+        <button class="btn btn-p" style="flex:1;padding:.6rem 1rem;font-size:.9rem" onclick="calcResultant()">Calcular</button>
+        <button class="btn btn-g" style="padding:.6rem 1rem;font-size:.9rem" onclick="resetResultant()">Limpiar</button>
+      </div>
+    </div>
+    <div class="col-outputs">
+      <div class="card"><div class="slbl">Plano de Fuerzas</div><canvas id="cv-res" width="700" height="400"></canvas></div>
+      <div id="rf-res"></div>
+    </div>
+  </div>
+</div>
+
 <footer class="footer">
   <div class="fn">Desarrollado por Matías González T.</div>
-  <div class="fs">calq v1.2 &nbsp;·&nbsp; Calculadora Estructural para Arquitectos</div>
+  <div class="fs">calq v1.4 &nbsp;·&nbsp; Calculadora Estructural para Arquitectos</div>
   <div class="fsup">¿Te resultó útil? Podés ayudarme a seguir con otros proyectos acá:</div>
   <div class="fl">
     <a class="fa" href="https://linkedin.com/in/matiasgonzalezt/" target="_blank" rel="noopener">
@@ -305,6 +329,7 @@ canvas{display:block;width:100%;height:auto;border-radius:6px}
 const mnq = {supA:'simple', supB:'simple', loads:[]};
 const bld = {supports:[], loads:[]};
 let isDark = false;
+const rf = {forces:[]};
 
 /* ═══════════ COLORS ═══════════ */
 function C(){
@@ -332,9 +357,9 @@ function toggleTheme(){
 
 /* ═══════════ TABS ═══════════ */
 function switchTab(t){
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='mnq')||(i===1&&t==='builder')));
-  document.querySelectorAll('.panel').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='mnq')||(i===1&&t==='builder')));
-  if(t==='mnq') runMNQ(); else bRender();
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='mnq')||(i===1&&t==='builder')||(i===2&&t==='res')));
+  document.querySelectorAll('.panel').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='mnq')||(i===1&&t==='builder')||(i===2&&t==='res')));
+  if(t==='mnq') runMNQ(); else if(t==='builder') bRender(); else drawRF();
 }
 
 /* ═══════════ SUPPORT SELECT ═══════════ */
@@ -391,7 +416,9 @@ function addBSup(){
   if(bld.supports.some(s=>Math.abs(s.pos-pos)<0.01)) return alert('Ya existe un apoyo en esa posición');
   bld.supports.push({pos,type,id:Date.now()});
   bld.supports.sort((a,b)=>a.pos-b.pos);
-  renderBSups(); bRender();
+  renderBSups(); 
+  renderLL('b'); 
+  if(bld.supports.length >= 2) calcBuilder(); else bRender();
 }
 function removeBSup(id){ bld.supports=bld.supports.filter(s=>s.id!==id); renderBSups(); bRender(); }
 
@@ -400,7 +427,9 @@ function addBLoad(type){
   if(type==='point') bld.loads.push({type,pos:+document.getElementById('bp-pos').value,mag:+document.getElementById('bp-mag').value,id:Date.now()});
   else if(type==='dist') bld.loads.push({type,a:+document.getElementById('bd-a').value,b:+document.getElementById('bd-b').value,qa:+document.getElementById('bd-qa').value,qb:+document.getElementById('bd-qb').value,id:Date.now()});
   else bld.loads.push({type:'moment',pos:+document.getElementById('bm-pos').value,mag:+document.getElementById('bm-mag').value,id:Date.now()});
-  renderLL('b'); bRender();
+  renderBSups(); 
+  renderLL('b'); 
+  if(bld.supports.length >= 2) calcBuilder(); else bRender();
 }
 function removeBLoad(id){ bld.loads=bld.loads.filter(l=>l.id!==id); renderLL('b'); bRender(); }
 
@@ -588,9 +617,9 @@ function bRender(){
 
   // Dimension
   ctx.strokeStyle=Cl.ink3; ctx.lineWidth=.8; ctx.setLineDash([3,4]);
-  ctx.beginPath(); ctx.moveTo(pl,y0+72); ctx.lineTo(pl+cw,y0+72); ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(pl,y0+110); ctx.lineTo(pl+cw,y0+110); ctx.stroke(); ctx.setLineDash([]);
   ctx.font='14px DM Mono,monospace'; ctx.fillStyle=Cl.ink3; ctx.textAlign='center';
-  ctx.fillText('L = '+L.toFixed(1)+' m', pl+cw/2, y0+64);
+  ctx.fillText('L = '+L.toFixed(1)+' m', pl+cw/2, y0+124);
 
   // X ticks
   const seg=Math.min(10, Math.ceil(L*2));
@@ -599,7 +628,7 @@ function bRender(){
     ctx.strokeStyle=Cl.br; ctx.lineWidth=.8;
     ctx.beginPath(); ctx.moveTo(fx,y0-3); ctx.lineTo(fx,y0+3); ctx.stroke();
     ctx.font='14px DM Mono,monospace'; ctx.fillStyle=Cl.ink3; ctx.textAlign='center';
-    ctx.fillText((i*L/seg).toFixed(1),fx,y0+92);
+    ctx.fillText((i*L/seg).toFixed(1),fx,y0+96);
   }
 
   // Supports
@@ -610,7 +639,7 @@ function bRender(){
     else if(s.type==='pin'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-10,y0+16);ctx.lineTo(tx+10,y0+16);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.arc(tx,y0+18,2.5,0,Math.PI*2);ctx.stroke();}
     else if(s.type==='fixed'){ctx.globalAlpha=.22;ctx.fillRect(tx-11,y0-12,9,24);ctx.globalAlpha=1;ctx.strokeRect(tx-11,y0-12,9,24);}
     ctx.font='bold 14px DM Mono,monospace'; ctx.textAlign='center';
-    ctx.fillText(s.pos.toFixed(1)+'m', tx, y0-16);
+    ctx.fillText(s.pos.toFixed(1)+'m', tx, y0+36);
     ctx.restore();
   });
 
@@ -640,33 +669,36 @@ function bRender(){
 function calcBuilder(){
   const L = +document.getElementById('bL').value || 8;
   if(bld.supports.length < 2) return alert('Necesitás al menos 2 apoyos para calcular');
+  
   const sups = bld.supports;
   const sA = sups[0], sB = sups[sups.length-1];
   const posA=sA.pos, posB=sB.pos;
-  if(Math.abs(posB-posA)<0.01) return alert('Los apoyos extremos deben estar en posiciones distintas');
-
-  // Calcular reacciones con cargas en coordenadas GLOBALES (0..L)
+  
   const {RA, RB} = calcReactions(posA, posB, sA.type, sB.type, bld.loads);
-
-  // Construir diagramas en coordenadas GLOBALES 0..L
   const {xs, Q, M} = buildQM(L, posA, posB, RA, RB, bld.loads);
 
   drawDiag('cv-bM', xs, M, C().ac, L);
   drawDiag('cv-bQ', xs, Q, C().gn, L);
 
-  // Redibujar estructura con reacciones
   bRender();
   const cv=document.getElementById('cv-bld'), ctx=cv.getContext('2d');
-  const cw=cv.clientWidth-pl-pr, y0=40+22;
-  const xOf = x => pl+(x/L)*cw;
+  
+  // SOLUCIÓN: Definimos pl y pr aquí para evitar el error
+  const pl=54, pr=54; 
+  const cw = cv.clientWidth - pl - pr; 
+  const y0 = 40 + 22;
+  const xOf = x => pl + (x/L) * cw;
+
   [[posA,RA],[posB,RB]].forEach(([xp,R])=>{
     arw(ctx, xOf(xp), y0+34, xOf(xp), y0+2, C().gn);
     ctx.font='bold 14px DM Mono,monospace'; ctx.fillStyle=C().gn; ctx.textAlign='center';
-    ctx.fillText(R.toFixed(2)+'kN', xOf(xp), y0+48);
+    ctx.fillText(R.toFixed(2)+'kN', xOf(xp), y0+54);
   });
 
   const Mx=Math.max(...M), Mn=Math.min(...M), Qx=Math.max(...Q), Qn=Math.min(...Q);
-  document.getElementById('b-res').innerHTML=resCards(RA,RB,posA,posB,Mx,Mn,Qx,Qn);
+  
+  // Esta línea es la que genera la estructura <div class="card"><div class="rg">...
+  document.getElementById('b-res').innerHTML = resCards(RA,RB,posA,posB,Mx,Mn,Qx,Qn);
 }
 
 function resetBuilder(){
@@ -728,30 +760,39 @@ function drawDiag(id, xs, vals, color, L){
   const maxV = Math.max(...vals.map(Math.abs), .01);
   const zero = pt + ch/2;
 
-  // Zero line
+  // Detectamos si es diagrama de Momento (M) o Corte (Q)
+  const isM = id.includes('M');
+  const sign = isM ? 1 : -1; // 1 = Positivo hacia abajo, -1 = Positivo hacia arriba
+
+  // Línea del cero
   ctx.strokeStyle=Cl.br; ctx.lineWidth=1; ctx.setLineDash([4,4]);
   ctx.beginPath(); ctx.moveTo(pl,zero); ctx.lineTo(pl+cw,zero); ctx.stroke(); ctx.setLineDash([]);
 
-  // Fill — positive values go DOWN (structural convention)
+  // Relleno de la curva
   ctx.beginPath(); ctx.moveTo(pl+(xs[0]/L)*cw, zero);
-  xs.forEach((x,i)=> ctx.lineTo(pl+(x/L)*cw, zero + (vals[i]/maxV)*(ch/2)*.88));
+  xs.forEach((x,i)=> ctx.lineTo(pl+(x/L)*cw, zero + sign * (vals[i]/maxV)*(ch/2)*.88));
   ctx.lineTo(pl+(xs[xs.length-1]/L)*cw, zero); ctx.closePath();
-  const g=ctx.createLinearGradient(0,zero,0,zero+ch/2);
-  g.addColorStop(0,color+'70'); g.addColorStop(1,color+'10');
-  ctx.fillStyle=g; ctx.fill();
+  
+  // Ajustamos el gradiente para que se vea bien vaya hacia arriba o hacia abajo
+  ctx.fillStyle = color + '33'; // Usamos un color sólido con transparencia para mayor compatibilidad
+  ctx.fill();
 
-  // Curve
+  // Trazo de la curva
   ctx.beginPath(); ctx.strokeStyle=color; ctx.lineWidth=2.2;
-  xs.forEach((x,i)=>{ const px=pl+(x/L)*cw, py=zero+(vals[i]/maxV)*(ch/2)*.88; i===0?ctx.moveTo(px,py):ctx.lineTo(px,py); });
+  xs.forEach((x,i)=>{ 
+    const px = pl+(x/L)*cw; 
+    const py = zero + sign * (vals[i]/maxV)*(ch/2)*.88; 
+    i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py); 
+  });
   ctx.stroke();
 
-  // Y labels — note: positive is DOWN, so labels are inverted
+  // Etiquetas del Eje Y (Invertimos los signos lógicamente)
   ctx.font='14px DM Mono,monospace'; ctx.fillStyle=Cl.ink3; ctx.textAlign='right';
-  ctx.fillText('−'+maxV.toFixed(2), pl-4, pt+5);
-  ctx.fillText('0', pl-4, zero+4);
-  ctx.fillText('+'+maxV.toFixed(2), pl-4, pt+ch+2);
+  ctx.fillText((isM ? '−' : '+') + maxV.toFixed(2), pl-4, pt+5); // Tope
+  ctx.fillText('0', pl-4, zero+4); // Centro
+  ctx.fillText((isM ? '+' : '−') + maxV.toFixed(2), pl-4, pt+ch+2); // Fondo
 
-  // X labels
+  // Etiquetas del Eje X
   ctx.textAlign='center';
   [0,.25,.5,.75,1].forEach(t=> ctx.fillText((t*L).toFixed(2)+'m', pl+t*cw, H-3));
 }
@@ -819,24 +860,135 @@ function resCards(RA,RB,posA,posB,Mx,Mn,Qx,Qn){
   </div></div>`;
 }
 
+/* ═══════════ RESULTANTE LOADS & MATH ═══════════ */
+function addRForce(){
+  const mag = +document.getElementById('rf-mag').value;
+  const ang = +document.getElementById('rf-ang').value;
+  const x = +document.getElementById('rf-x').value;
+  const y = +document.getElementById('rf-y').value;
+  if(mag <= 0) return alert('La magnitud debe ser mayor a 0');
+  rf.forces.push({mag, ang, x, y, id:Date.now()});
+  renderRF(); drawRF(); document.getElementById('rf-res').innerHTML='';
+}
+
+function removeRForce(id){
+  rf.forces = rf.forces.filter(f=>f.id!==id);
+  renderRF(); drawRF(); document.getElementById('rf-res').innerHTML='';
+}
+
+function renderRF(){
+  const div = document.getElementById('rf-ll');
+  if(!rf.forces.length){ div.innerHTML='<div class="enote">Sin fuerzas aplicadas</div>'; return; }
+  div.innerHTML = rf.forces.map(f=>`
+    <div class="lrow">
+      <div class="dot dp"></div>
+      <span class="llbl">${f.mag}kN ∠${f.ang}° en (${f.x}; ${f.y})</span>
+      <button class="btn btn-g btn-xs" onclick="removeRForce(${f.id})">✕</button>
+    </div>`).join('');
+}
+
+function resetResultant(){
+  rf.forces=[]; renderRF(); document.getElementById('rf-res').innerHTML=''; drawRF();
+}
+
+function calcResultant(){
+  if(rf.forces.length === 0) return alert('Agregá al menos una fuerza para calcular.');
+  
+  let Rx = 0, Ry = 0, Mo = 0;
+  rf.forces.forEach(f => {
+    let rad = f.ang * Math.PI/180;
+    let fx = f.mag * Math.cos(rad);
+    let fy = f.mag * Math.sin(rad);
+    Rx += fx; Ry += fy;
+    Mo += (f.x * fy - f.y * fx); // Teorema de Varignon: Mo = r x F
+  });
+
+  let Rmag = Math.sqrt(Rx*Rx + Ry*Ry);
+  let Rang = Math.atan2(Ry, Rx) * 180/Math.PI;
+  if(Rang < 0) Rang += 360;
+
+  // Punto de aplicación sobre la línea de acción (corte con los ejes)
+  let rx = 0, ry = 0;
+  if (Rmag < 0.001) { rx = 0; ry = 0; } // Equilibrio
+  else if (Math.abs(Ry) > Math.abs(Rx)) { rx = Mo / Ry; } // Corta el eje X
+  else { ry = -Mo / Rx; } // Corta el eje Y
+  
+  drawRF({mag: Rmag, ang: Rang, x: rx, y: ry});
+
+  document.getElementById('rf-res').innerHTML = `<div class="card"><div class="rg">
+    <div class="rc r"><div class="rl">Fuerza R (kN)</div><div class="rv">${Rmag.toFixed(2)}</div></div>
+    <div class="rc a"><div class="rl">Ángulo (°)</div><div class="rv">${Rang.toFixed(1)}</div></div>
+    <div class="rc g"><div class="rl">Corte Eje X (m)</div><div class="rv">${rx.toFixed(2)}</div></div>
+    <div class="rc"><div class="rl">Corte Eje Y (m)</div><div class="rv">${ry.toFixed(2)}</div></div>
+  </div></div>`;
+}
+
+function drawRF(resultant = null) {
+  const cv = document.getElementById('cv-res'); if(!cv) return;
+  const {W, H} = fixDPI(cv); const ctx = cv.getContext('2d'); const Cl = C();
+  ctx.clearRect(0,0,W,H);
+
+  // Escala automática del espacio de trabajo
+  let pts = [{x:0, y:0}];
+  rf.forces.forEach(f => pts.push({x: f.x, y: f.y}));
+  if (resultant) pts.push({x: resultant.x, y: resultant.y});
+
+  let minX = Math.min(...pts.map(p=>p.x)), maxX = Math.max(...pts.map(p=>p.x));
+  let minY = Math.min(...pts.map(p=>p.y)), maxY = Math.max(...pts.map(p=>p.y));
+  
+  let span = Math.max(maxX - minX, maxY - minY, 4) * 1.6; // Margen visual
+  let cx = (minX + maxX)/2, cy = (minY + maxY)/2;
+  let pxScale = Math.min(W, H) / span;
+
+  const sx = x => W/2 + (x - cx) * pxScale;
+  const sy = y => H/2 - (y - cy) * pxScale; // Y invertido para plano cartesiano tradicional
+
+  // Grilla Ejes Principales
+  ctx.strokeStyle = Cl.br; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(0, sy(0)); ctx.lineTo(W, sy(0)); ctx.moveTo(sx(0), 0); ctx.lineTo(sx(0), H); ctx.stroke(); ctx.setLineDash([]);
+
+  if(rf.forces.length === 0) return;
+
+  // Escala visual de los vectores (flechas)
+  let maxF = Math.max(...rf.forces.map(f=>f.mag), 1);
+  if (resultant) maxF = Math.max(maxF, resultant.mag);
+  let fScale = (span * 0.25) / maxF; // La fuerza máxima mide un cuarto de la pantalla
+
+  // Dibujar Fuerzas Base
+  rf.forces.forEach(f => {
+    let rad = f.ang * Math.PI/180;
+    let dx = f.mag * Math.cos(rad) * fScale;
+    let dy = f.mag * Math.sin(rad) * fScale;
+    arw(ctx, sx(f.x), sy(f.y), sx(f.x + dx), sy(f.y + dy), Cl.ink2, 5);
+  });
+
+  // Dibujar Fuerza Resultante
+  if(resultant && resultant.mag > 0.001) {
+    let rad = resultant.ang * Math.PI/180;
+    let dx = resultant.mag * Math.cos(rad) * fScale;
+    let dy = resultant.mag * Math.sin(rad) * fScale;
+    
+    ctx.save(); ctx.lineWidth = 3.5;
+    arw(ctx, sx(resultant.x), sy(resultant.y), sx(resultant.x + dx), sy(resultant.y + dy), Cl.ac, 8);
+    ctx.font = 'bold 15px DM Mono,monospace'; ctx.fillStyle = Cl.ac; ctx.textAlign='left';
+    ctx.fillText('R', sx(resultant.x + dx) + 8, sy(resultant.y + dy) - 8);
+    ctx.restore();
+  }
+}
+
 /* ═══════════ INIT ═══════════ */
 // Recalcular gráficos si cambia el tamaño de la pantalla
 window.addEventListener('resize', () => {
-  // Verificamos qué pestaña está activa
-  const isMnqActive = document.getElementById('panel-mnq').classList.contains('active');
-  
-  if (isMnqActive) {
-    runMNQ();
+  const t = document.querySelector('.tab.active').innerText;
+  if (t.includes('MNQ')) runMNQ();
+  else if (t.includes('Constructor')) {
+    if (document.getElementById('b-res').innerHTML !== '') calcBuilder(); else bRender();
   } else {
-    // Si estamos en Constructor y ya hay resultados, calculamos. Si no, solo dibujamos la viga.
-    if (document.getElementById('b-res').innerHTML !== '') {
-      calcBuilder();
-    } else {
-      bRender();
-    }
+    // Si estamos en la Resultante
+    if (document.getElementById('rf-res').innerHTML !== '') calcResultant(); else drawRF();
   }
 });
-renderLL('mnq'); renderLL('b'); renderBSups(); runMNQ(); bRender();
+renderLL('mnq'); renderLL('b'); renderBSups(); renderRF(); runMNQ(); bRender(); drawRF();
 </script>
 </body>
 </html>
