@@ -150,15 +150,15 @@ canvas{display:block;width:100%;height:auto;border-radius:6px}
       <div class="card">
         <div class="slbl">Apoyo A &nbsp;<span class="badge simple" id="lblA">Simple</span></div>
         <div class="sg">
-          <div class="so ss on" id="sA-simple" onclick="selSup('A','simple',this)"><svg width="30" height="22" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="14" stroke="currentColor" stroke-width="1.7"/><polygon points="15,14 7,21 23,21" fill="none" stroke="currentColor" stroke-width="1.7"/><line x1="5" y1="22" x2="25" y2="22" stroke="currentColor" stroke-width="1.5"/></svg>Simple</div>
-          <div class="so sp" id="sA-pin" onclick="selSup('A','pin',this)"><svg width="30" height="22" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="13" stroke="currentColor" stroke-width="1.7"/><polygon points="15,13 7,20 23,20" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="15" cy="21.5" r="1.5" stroke="currentColor" fill="none" stroke-width="1.4"/></svg>Articulado</div>
-          <div class="so sf" id="sA-fixed" onclick="selSup('A','fixed',this)"><svg width="30" height="22" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="18" stroke="currentColor" stroke-width="1.7"/><rect x="11" y="18" width="7" height="4" fill="currentColor" opacity=".35"/><line x1="7" y1="18" x2="23" y2="18" stroke="currentColor" stroke-width="1.5"/></svg>Empotrado</div>
+          <div class="so ss on" id="sA-simple" onclick="selSup('A','simple',this)"><svg height="42" viewBox="0 0 30 22"><polygon points="15,4 7,16 23,16" fill="none" stroke="currentColor" stroke-width="1"/><line x1="6" y1="18" x2="24" y2="18" stroke="currentColor" stroke-width="1"/></svg>Simple</div>
+          <div class="so sp" id="sA-pin" onclick="selSup('A','pin',this)"><svg  height="42" viewBox="0 0 30 22"><polygon points="15,4 7,16 23,16" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="15" cy="19" r="2" stroke="currentColor" fill="none" stroke-width="1"/></svg>Articulado</div>
+          <div class="so sf" id="sA-fixed" onclick="selSup('A','fixed',this)"><svg height="42" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="18" stroke="currentColor" stroke-width="1"/><rect x="7" y="18" width="16" height="4" fill="currentColor" opacity=".35"/><line x1="7" y1="18" x2="23" y2="18" stroke="currentColor" stroke-width="1"/></svg>Empotrado</div>
         </div>
         <div class="slbl" style="margin-top:.1rem">Apoyo B &nbsp;<span class="badge simple" id="lblB">Simple</span></div>
         <div class="sg" style="margin-bottom:0">
-          <div class="so ss on" id="sB-simple" onclick="selSup('B','simple',this)"><svg width="30" height="22" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="14" stroke="currentColor" stroke-width="1.7"/><polygon points="15,14 7,21 23,21" fill="none" stroke="currentColor" stroke-width="1.7"/><line x1="5" y1="22" x2="25" y2="22" stroke="currentColor" stroke-width="1.5"/></svg>Simple</div>
-          <div class="so sp" id="sB-pin" onclick="selSup('B','pin',this)"><svg width="30" height="22" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="13" stroke="currentColor" stroke-width="1.7"/><polygon points="15,13 7,20 23,20" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="15" cy="21.5" r="1.5" stroke="currentColor" fill="none" stroke-width="1.4"/></svg>Articulado</div>
-          <div class="so sf" id="sB-fixed" onclick="selSup('B','fixed',this)"><svg width="30" height="22" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="18" stroke="currentColor" stroke-width="1.7"/><rect x="11" y="18" width="7" height="4" fill="currentColor" opacity=".35"/><line x1="7" y1="18" x2="23" y2="18" stroke="currentColor" stroke-width="1.5"/></svg>Empotrado</div>
+          <div class="so ss on" id="sB-simple" onclick="selSup('B','simple',this)"><svg height="42" viewBox="0 0 30 22"><polygon points="15,4 7,16 23,16" fill="none" stroke="currentColor" stroke-width="1"/><line x1="6" y1="18" x2="24" y2="18" stroke="currentColor" stroke-width="1"/></svg>Simple</div>
+          <div class="so sp" id="sB-pin" onclick="selSup('B','pin',this)"><svg height="42" viewBox="0 0 30 22"><polygon points="15,4 7,16 23,16" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="15" cy="19" r="2" stroke="currentColor" fill="none" stroke-width="1"/></svg>Articulado</div>
+          <div class="so sf" id="sB-fixed" onclick="selSup('B','fixed',this)"><svg height="42" viewBox="0 0 30 22"><line x1="15" y1="2" x2="15" y2="18" stroke="currentColor" stroke-width="1"/><rect x="7" y="18" width="16" height="4" fill="currentColor" opacity=".35"/><line x1="7" y1="18" x2="23" y2="18" stroke="currentColor" stroke-width="1"/></svg>Empotrado</div>
         </div>
       </div>
       <div class="card">
@@ -198,7 +198,7 @@ canvas{display:block;width:100%;height:auto;border-radius:6px}
       <button class="btn btn-p" style="width:100%;padding:.6rem 1rem;font-size:.9rem" onclick="runMNQ()">Calcular y Graficar</button>
     </div>
     <div class="col-outputs">
-      <div class="card"><div class="slbl">Estructura con cargas</div><canvas id="cv-beam" width="700" height="130"></canvas></div>
+      <div class="card"><div class="slbl">Estructura con cargas</div><canvas id="cv-beam" width="700" height="148"></canvas></div>
       <div class="card"><div class="slbl">Momentos — M (kN·m)</div><canvas id="cv-M" width="700" height="130"></canvas></div>
       <div class="card"><div class="slbl">Corte — Q (kN)</div><canvas id="cv-Q" width="700" height="130"></canvas></div>
       <div class="card"><div class="slbl">Axial — N (kN)</div><canvas id="cv-N" width="700" height="58"></canvas></div>
@@ -595,7 +595,7 @@ function runMNQ(){
   const {W: wN, H: hN} = fixDPI(cvN); 
   const ctxN=cvN.getContext('2d');
   ctxN.clearRect(0,0,wN,hN);
-  ctxN.font='13px Archivo,sans-serif'; ctxN.fillStyle=C().ink3; ctxN.textAlign='center';
+  ctxN.font='12px Archivo,sans-serif'; ctxN.fillStyle=C().ink3; ctxN.textAlign='center';
   ctxN.fillText('N = 0.00 kN  —  sin carga axial en esta configuración', wN/2, hN/2+5);
 
   const Mx=Math.max(...M), Mn=Math.min(...M), Qx=Math.max(...Q), Qn=Math.min(...Q);
@@ -627,7 +627,7 @@ function bRender(){
     const fx=pl+(i/seg)*cw;
     ctx.strokeStyle=Cl.br; ctx.lineWidth=.8;
     ctx.beginPath(); ctx.moveTo(fx,y0-3); ctx.lineTo(fx,y0+3); ctx.stroke();
-    ctx.font='14px DM Mono,monospace'; ctx.fillStyle=Cl.ink3; ctx.textAlign='center';
+    ctx.font='12px DM Mono,monospace'; ctx.fillStyle=Cl.ink3; ctx.textAlign='center';
     ctx.fillText((i*L/seg).toFixed(1),fx,y0+96);
   }
 
@@ -635,11 +635,11 @@ function bRender(){
   bld.supports.forEach(s=>{
     const tx=xOf(s.pos), col=SCOL[s.type]||Cl.ink;
     ctx.save(); ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=1.8;
-    if(s.type==='simple'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-11,y0+18);ctx.lineTo(tx+11,y0+18);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(tx-14,y0+20);ctx.lineTo(tx+14,y0+20);ctx.stroke();}
-    else if(s.type==='pin'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-10,y0+16);ctx.lineTo(tx+10,y0+16);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.arc(tx,y0+18,2.5,0,Math.PI*2);ctx.stroke();}
-    else if(s.type==='fixed'){ctx.globalAlpha=.22;ctx.fillRect(tx-11,y0-12,9,24);ctx.globalAlpha=1;ctx.strokeRect(tx-11,y0-12,9,24);}
-    ctx.font='bold 14px DM Mono,monospace'; ctx.textAlign='center';
-    ctx.fillText(s.pos.toFixed(1)+'m', tx, y0+36);
+    if(s.type==='simple'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-11,y0+18);ctx.lineTo(tx+11,y0+18);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(tx-14,y0+22);ctx.lineTo(tx+14,y0+22);ctx.stroke();}
+    else if(s.type==='pin'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-10,y0+16);ctx.lineTo(tx+10,y0+16);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.arc(tx,y0+22,2.5,0,Math.PI*2);ctx.stroke();}
+    else if(s.type==='fixed'){ctx.globalAlpha=.22;ctx.fillRect(tx-5,y0-12,9,24);ctx.globalAlpha=1;ctx.strokeRect(tx-5,y0-12,9,24);}
+    ctx.font='bold 12px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(s.pos.toFixed(1)+'m', tx, y0+48);
     ctx.restore();
   });
 
@@ -650,14 +650,14 @@ function bRender(){
     if(l.type==='point'){
       const tx=xOf(l.pos),al=Math.max(16,Math.abs(l.mag)/maxMag*28);
       arw(ctx,tx,y0-al,tx,y0-1,Cl2.ac);
-      ctx.font='bold 14px DM Mono,monospace'; ctx.fillStyle=Cl2.ac; ctx.textAlign='center';
+      ctx.font='bold 12px DM Mono,monospace'; ctx.fillStyle=Cl2.ac; ctx.textAlign='center';
       ctx.fillText(l.mag.toFixed(0)+'kN',tx,y0-al-5);
     } else if(l.type==='dist'){
       const ax=xOf(l.a),bx=xOf(l.b),sA=Math.max(9,Math.abs(l.qa)/maxMag*24),sB=Math.max(9,Math.abs(l.qb)/maxMag*24);
       ctx.save(); ctx.strokeStyle=Cl2.ac; ctx.fillStyle=Cl2.ac+'22'; ctx.lineWidth=1.1;
       ctx.beginPath();ctx.moveTo(ax,y0-sA);ctx.lineTo(bx,y0-sB);ctx.lineTo(bx,y0);ctx.lineTo(ax,y0);ctx.closePath();ctx.fill();ctx.stroke();
       const steps=Math.max(2,Math.floor((bx-ax)/16));
-      for(let i=0;i<=steps;i++){arw(ctx,ax+i*(bx-ax)/steps,y0-(sA+(sB-sA)*i/steps)+1,ax+i*(bx-ax)/steps,y0-1,Cl2.ac,3);}
+      // for(let i=0;i<=steps;i++){arw(ctx,ax+i*(bx-ax)/steps,y0-(sA+(sB-sA)*i/steps)+1,ax+i*(bx-ax)/steps,y0-1,Cl2.ac,3,1);}
       ctx.restore();
     } else {
       const tx=xOf(l.pos); ctx.save(); ctx.strokeStyle=Cl2.am; ctx.lineWidth=2.2;
@@ -690,9 +690,9 @@ function calcBuilder(){
   const xOf = x => pl + (x/L) * cw;
 
   [[posA,RA],[posB,RB]].forEach(([xp,R])=>{
-    arw(ctx, xOf(xp), y0+34, xOf(xp), y0+2, C().gn);
-    ctx.font='bold 14px DM Mono,monospace'; ctx.fillStyle=C().gn; ctx.textAlign='center';
-    ctx.fillText(R.toFixed(2)+'kN', xOf(xp), y0+54);
+    arw(ctx, xOf(xp), y0+36, xOf(xp), y0+6, C().gn);
+    ctx.font='bold 12px DM Mono,monospace'; ctx.fillStyle=C().gn; ctx.textAlign='center';
+    ctx.fillText(R.toFixed(2)+'kN', xOf(xp), y0+64);
   });
 
   const Mx=Math.max(...M), Mn=Math.min(...M), Qx=Math.max(...Q), Qn=Math.min(...Q);
@@ -742,14 +742,41 @@ function fixDPI(cv) {
   return { W, H };
 }
 
-function arw(ctx,x1,y1,x2,y2,col,hw=5.5){
-  const a=Math.atan2(y2-y1,x2-x1);
-  ctx.save(); ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=1.8;
-  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(x2,y2);
-  ctx.lineTo(x2-hw*Math.cos(a-.42),y2-hw*Math.sin(a-.42));
-  ctx.lineTo(x2-hw*Math.cos(a+.42),y2-hw*Math.sin(a+.42));
-  ctx.closePath(); ctx.fill(); ctx.restore();
+function arw(ctx, x1, y1, x2, y2, col, hw = 5.5, lw = 3) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  
+  if (dist < 0.1) return;
+
+  const a = Math.atan2(dy, dx);
+  
+  ctx.save(); 
+  ctx.strokeStyle = col; 
+  ctx.lineWidth = lw; 
+  
+  // Estos dos atributos hacen que las uniones y los extremos de 
+  // las líneas se vean redondeados y súper prolijos
+  ctx.lineCap = 'round';   
+  ctx.lineJoin = 'round';  
+  
+  // 1. Dibujamos el "tallo" completo hasta (x2, y2)
+  ctx.beginPath(); 
+  ctx.moveTo(x1, y1); 
+  ctx.lineTo(x2, y2); 
+  ctx.stroke();
+  
+  // 2. Dibujamos las dos patitas de la flecha
+  ctx.beginPath(); 
+  // Patita 1
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - hw * Math.cos(a - .7), y2 - hw * Math.sin(a - 0.7));
+  // Patita 2
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - hw * Math.cos(a + 0.7), y2 - hw * Math.sin(a + 0.7));
+  ctx.stroke(); 
+  
+  ctx.restore();
 }
 
 function drawDiag(id, xs, vals, color, L){
@@ -760,41 +787,51 @@ function drawDiag(id, xs, vals, color, L){
   const maxV = Math.max(...vals.map(Math.abs), .01);
   const zero = pt + ch/2;
 
-  // Detectamos si es diagrama de Momento (M) o Corte (Q)
   const isM = id.includes('M');
-  const sign = isM ? 1 : -1; // 1 = Positivo hacia abajo, -1 = Positivo hacia arriba
+  const sign = isM ? 1 : -1; 
 
   // Línea del cero
   ctx.strokeStyle=Cl.br; ctx.lineWidth=1; ctx.setLineDash([4,4]);
   ctx.beginPath(); ctx.moveTo(pl,zero); ctx.lineTo(pl+cw,zero); ctx.stroke(); ctx.setLineDash([]);
 
-  // Relleno de la curva
-  ctx.beginPath(); ctx.moveTo(pl+(xs[0]/L)*cw, zero);
+  // 1. Relleno de la curva (Aseguramos que empiece y termine en el eje)
+  ctx.beginPath(); 
+  ctx.moveTo(pl + (xs[0]/L)*cw, zero); // Punto inicial en el eje cero
   xs.forEach((x,i)=> ctx.lineTo(pl+(x/L)*cw, zero + sign * (vals[i]/maxV)*(ch/2)*.88));
-  ctx.lineTo(pl+(xs[xs.length-1]/L)*cw, zero); ctx.closePath();
-  
-  // Ajustamos el gradiente para que se vea bien vaya hacia arriba o hacia abajo
-  ctx.fillStyle = color + '33'; // Usamos un color sólido con transparencia para mayor compatibilidad
+  ctx.lineTo(pl+(xs[xs.length-1]/L)*cw, zero); // Punto final de vuelta al eje
+  ctx.closePath();
+  ctx.fillStyle = color + '33';
   ctx.fill();
 
-  // Trazo de la curva
-  ctx.beginPath(); ctx.strokeStyle=color; ctx.lineWidth=2.2;
+  // 2. Trazo de la curva (Perímetro con líneas de cierre verticales)
+  ctx.beginPath(); 
+  ctx.strokeStyle=color; 
+  ctx.lineWidth=2.2;
+  ctx.lineJoin = 'round'; // Para que las esquinas de los saltos de corte se vean suaves
+
+  // --- LÍNEA INICIAL VERTICAL ---
+  ctx.moveTo(pl + (xs[0]/L)*cw, zero); 
+
+  // --- CUERPO DEL DIAGRAMA ---
   xs.forEach((x,i)=>{ 
     const px = pl+(x/L)*cw; 
-    const py = zero + sign * (vals[i]/maxV)*(ch/2)*.88; 
-    i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py); 
+    const py = zero + sign * (vals[i]/maxV)*(ch/2)*.9; 
+    ctx.lineTo(px,py); 
   });
+
+  // --- LÍNEA FINAL VERTICAL ---
+  ctx.lineTo(pl + (xs[xs.length-1]/L)*cw, zero);
+  
   ctx.stroke();
 
   // Etiquetas del Eje Y (Invertimos los signos lógicamente)
-  ctx.font='14px DM Mono,monospace'; ctx.fillStyle=Cl.ink3; ctx.textAlign='right';
+  ctx.font='12px DM Mono,monospace'; ctx.fillStyle=Cl.ink3; ctx.textAlign='right';
   ctx.fillText((isM ? '−' : '+') + maxV.toFixed(2), pl-4, pt+5); // Tope
   ctx.fillText('0', pl-4, zero+4); // Centro
   ctx.fillText((isM ? '+' : '−') + maxV.toFixed(2), pl-4, pt+ch+2); // Fondo
 
   // Etiquetas del Eje X
-  ctx.textAlign='center';
-  [0,.25,.5,.75,1].forEach(t=> ctx.fillText((t*L).toFixed(2)+'m', pl+t*cw, H-3));
+    [0,.25,.5,.75,1].forEach(t=> ctx.fillText((t*L).toFixed(1)+'m', pl+t*cw, H-3));
 }
 
 function drawBeamCV(id, L, supports, loads){
@@ -812,13 +849,13 @@ function drawBeamCV(id, L, supports, loads){
   // Supports
   supports.forEach(s=>{
     const tx=xOf(s.pos), col=SCOL[s.type]||Cl.ink;
-    ctx.save(); ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=1.8;
-    if(s.type==='simple'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-11,y0+18);ctx.lineTo(tx+11,y0+18);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(tx-14,y0+20);ctx.lineTo(tx+14,y0+20);ctx.stroke();}
-    else if(s.type==='pin'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-10,y0+16);ctx.lineTo(tx+10,y0+16);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.arc(tx,y0+18,2.5,0,Math.PI*2);ctx.stroke();}
-    else if(s.type==='fixed'){ctx.globalAlpha=.22;ctx.fillRect(tx-11,y0-12,9,24);ctx.globalAlpha=1;ctx.strokeRect(tx-11,y0-12,9,24);}
+    ctx.save(); ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=2;
+    if(s.type==='simple'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-11,y0+18);ctx.lineTo(tx+11,y0+18);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(tx-14,y0+22);ctx.lineTo(tx+14,y0+22);ctx.stroke();}
+    else if(s.type==='pin'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-10,y0+16);ctx.lineTo(tx+10,y0+16);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.arc(tx,y0+22,2.5,0,Math.PI*2);ctx.stroke();}
+    else if(s.type==='fixed'){ctx.globalAlpha=.22;ctx.fillRect(tx-5,y0-12,9,24);ctx.globalAlpha=1;ctx.strokeRect(tx-5,y0-12,9,24);}
     if(Math.abs(s.R)>0.001){
       arw(ctx, tx, y0+34, tx, y0+2, Cl.gn);
-      ctx.font='bold 14px DM Mono,monospace'; ctx.fillStyle=Cl.gn; ctx.textAlign='center';
+      ctx.font='bold 12px DM Mono,monospace'; ctx.fillStyle=Cl.gn; ctx.textAlign='center';
       ctx.fillText(s.R.toFixed(2)+'kN', tx, y0+64);
     }
     ctx.restore();
@@ -830,15 +867,15 @@ function drawBeamCV(id, L, supports, loads){
     if(l.type==='point'){
       const tx=xOf(l.pos), al=Math.max(18,Math.abs(l.mag)/maxMag*30);
       arw(ctx,tx,y0-al,tx,y0-1,Cl.ac);
-      ctx.font='bold 14px DM Mono,monospace'; ctx.fillStyle=Cl.ac; ctx.textAlign='center';
+      ctx.font='bold 12px DM Mono,monospace'; ctx.fillStyle=Cl.ac; ctx.textAlign='center';
       ctx.fillText(l.mag.toFixed(1)+'kN',tx,y0-al-5);
     } else if(l.type==='dist'){
       const ax=xOf(l.a),bx=xOf(l.b),sA=Math.max(10,Math.abs(l.qa)/maxMag*26),sB=Math.max(10,Math.abs(l.qb)/maxMag*26);
       ctx.save(); ctx.strokeStyle=Cl.ac; ctx.fillStyle=Cl.ac+'22'; ctx.lineWidth=1.2;
       ctx.beginPath();ctx.moveTo(ax,y0-sA);ctx.lineTo(bx,y0-sB);ctx.lineTo(bx,y0);ctx.lineTo(ax,y0);ctx.closePath();ctx.fill();ctx.stroke();
       const steps=Math.max(2,Math.floor((bx-ax)/14));
-      for(let i=0;i<=steps;i++) arw(ctx,ax+i*(bx-ax)/steps,y0-(sA+(sB-sA)*i/steps)+1,ax+i*(bx-ax)/steps,y0-1,Cl.ac,3);
-      ctx.font='bold 14px DM Mono,monospace'; ctx.fillStyle=Cl.ac; ctx.textAlign='center';
+      // for(let i=0;i<=steps;i++) arw(ctx,ax+i*(bx-ax)/steps,y0-(sA+(sB-sA)*i/steps)+1,ax+i*(bx-ax)/steps,y0-1,Cl.ac,3,1);
+      ctx.font='bold 12px DM Mono,monospace'; ctx.fillStyle=Cl.ac; ctx.textAlign='center';
       ctx.fillText(l.qa.toFixed(1)+'kN/m',ax,y0-sA-5);
       if(Math.abs(l.qb-l.qa)>.01) ctx.fillText(l.qb.toFixed(1)+'kN/m',bx,y0-sB-5);
       ctx.restore();
@@ -928,38 +965,71 @@ function drawRF(resultant = null) {
   const {W, H} = fixDPI(cv); const ctx = cv.getContext('2d'); const Cl = C();
   ctx.clearRect(0,0,W,H);
 
-  // Escala automática del espacio de trabajo
-  let pts = [{x:0, y:0}];
-  rf.forces.forEach(f => pts.push({x: f.x, y: f.y}));
-  if (resultant) pts.push({x: resultant.x, y: resultant.y});
+  if(rf.forces.length === 0) {
+    // Si no hay fuerzas, dibujamos solo la grilla vacía centrada
+    const cx = 0, cy = 0, pxScale = Math.min(W,H)/4;
+    const sx = x => W/2 + (x - cx) * pxScale;
+    const sy = y => H/2 - (y - cy) * pxScale;
+    ctx.strokeStyle = Cl.br; ctx.lineWidth = 1.5; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(0, sy(0)); ctx.lineTo(W, sy(0)); ctx.moveTo(sx(0), 0); ctx.lineTo(sx(0), H); ctx.stroke(); ctx.setLineDash([]);
+    return;
+  }
 
-  let minX = Math.min(...pts.map(p=>p.x)), maxX = Math.max(...pts.map(p=>p.x));
-  let minY = Math.min(...pts.map(p=>p.y)), maxY = Math.max(...pts.map(p=>p.y));
+  // 1. Buscamos la magnitud máxima de las fuerzas
+  let maxF = Math.max(...rf.forces.map(f=>f.mag), 0.6);
+  if (resultant) maxF = Math.max(maxF, resultant.mag);
+
+  // 2. Límites preliminares (Solo puntos de inicio y el centro 0,0)
+  let posPts = [{x:0, y:0}];
+  rf.forces.forEach(f => posPts.push({x: f.x, y: f.y}));
+  if (resultant) posPts.push({x: resultant.x, y: resultant.y});
   
-  let span = Math.max(maxX - minX, maxY - minY, 4) * 1.6; // Margen visual
+  let pMinX = Math.min(...posPts.map(p=>p.x)), pMaxX = Math.max(...posPts.map(p=>p.x));
+  let pMinY = Math.min(...posPts.map(p=>p.y)), pMaxY = Math.max(...posPts.map(p=>p.y));
+  let posSpan = Math.max(pMaxX - pMinX, pMaxY - pMinY, 4);
+
+  // 3. Calculamos cuánto espacio físico van a ocupar las flechas
+  let fScale = (posSpan * 0.5) / maxF; 
+
+  // 4. EL ARREGLO: Agregamos las PUNTAS de las flechas a la lista de puntos a encuadrar
+  let allPts = [...posPts];
+  rf.forces.forEach(f => {
+    let rad = f.ang * Math.PI/180;
+    allPts.push({
+      x: f.x + f.mag * Math.cos(rad) * fScale,
+      y: f.y + f.mag * Math.sin(rad) * fScale
+    });
+  });
+  if (resultant && resultant.mag > 0.001) {
+    let rad = resultant.ang * Math.PI/180;
+    allPts.push({
+      x: resultant.x + resultant.mag * Math.cos(rad) * fScale,
+      y: resultant.y + resultant.mag * Math.sin(rad) * fScale
+    });
+  }
+
+  // 5. Ahora sí, calculamos la caja delimitadora total
+  let minX = Math.min(...allPts.map(p=>p.x)), maxX = Math.max(...allPts.map(p=>p.x));
+  let minY = Math.min(...allPts.map(p=>p.y)), maxY = Math.max(...allPts.map(p=>p.y));
+
+  // 6. Escala final con un 30% de margen seguro para que nada toque los bordes
+  let span = Math.max(maxX - minX, maxY - minY, 4) * 1.3; 
   let cx = (minX + maxX)/2, cy = (minY + maxY)/2;
   let pxScale = Math.min(W, H) / span;
 
   const sx = x => W/2 + (x - cx) * pxScale;
-  const sy = y => H/2 - (y - cy) * pxScale; // Y invertido para plano cartesiano tradicional
+  const sy = y => H/2 - (y - cy) * pxScale;
 
   // Grilla Ejes Principales
-  ctx.strokeStyle = Cl.br; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+  ctx.strokeStyle = Cl.br; ctx.lineWidth = 1.5; ctx.setLineDash([4,4]);
   ctx.beginPath(); ctx.moveTo(0, sy(0)); ctx.lineTo(W, sy(0)); ctx.moveTo(sx(0), 0); ctx.lineTo(sx(0), H); ctx.stroke(); ctx.setLineDash([]);
-
-  if(rf.forces.length === 0) return;
-
-  // Escala visual de los vectores (flechas)
-  let maxF = Math.max(...rf.forces.map(f=>f.mag), 1);
-  if (resultant) maxF = Math.max(maxF, resultant.mag);
-  let fScale = (span * 0.25) / maxF; // La fuerza máxima mide un cuarto de la pantalla
 
   // Dibujar Fuerzas Base
   rf.forces.forEach(f => {
     let rad = f.ang * Math.PI/180;
     let dx = f.mag * Math.cos(rad) * fScale;
     let dy = f.mag * Math.sin(rad) * fScale;
-    arw(ctx, sx(f.x), sy(f.y), sx(f.x + dx), sy(f.y + dy), Cl.ink2, 5);
+    arw(ctx, sx(f.x), sy(f.y), sx(f.x + dx), sy(f.y + dy), Cl.ink2, 12, 2.5);
   });
 
   // Dibujar Fuerza Resultante
@@ -968,11 +1038,9 @@ function drawRF(resultant = null) {
     let dx = resultant.mag * Math.cos(rad) * fScale;
     let dy = resultant.mag * Math.sin(rad) * fScale;
     
-    ctx.save(); ctx.lineWidth = 3.5;
-    arw(ctx, sx(resultant.x), sy(resultant.y), sx(resultant.x + dx), sy(resultant.y + dy), Cl.ac, 8);
-    ctx.font = 'bold 15px DM Mono,monospace'; ctx.fillStyle = Cl.ac; ctx.textAlign='left';
+    arw(ctx, sx(resultant.x), sy(resultant.y), sx(resultant.x + dx), sy(resultant.y + dy), Cl.ac, 15, 4.5);
+    ctx.font = 'bold 14px DM Mono,monospace'; ctx.fillStyle = Cl.ac; ctx.textAlign='left';
     ctx.fillText('R', sx(resultant.x + dx) + 8, sy(resultant.y + dy) - 8);
-    ctx.restore();
   }
 }
 
