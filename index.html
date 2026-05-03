@@ -56,7 +56,7 @@ body{font-family:'Archivo',sans-serif;background:var(--bg);color:var(--ink);min-
 .slbl{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.65rem;display:flex;align-items:center;gap:.5rem}
 
 label{font-size:.85rem;font-weight:500;color:var(--ink2);display:block;margin-bottom:.3rem}
-input[type=number],select{width:100%;padding:.5rem .7rem;background:var(--bg);border:1.5px solid var(--br);border-radius:var(--rs);font-family:'Archivo',sans-serif;font-size:.9rem;color:var(--ink);outline:none;transition:border-color .15s;-moz-appearance:textfield}
+input[type=number],select{width:100%;padding:.5rem .7rem;background:var(--bg);border:1.5px solid var(--br);border-radius:var(--rs);font-family:'Archivo',sans-serif;font-size:.9rem;color:var(--ink);outline:none;transition:border-color .15s;-moz-appearance:textfield;appearance:textfield}
 input[type=number]:focus,select:focus{border-color:var(--ac)}
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
@@ -176,6 +176,14 @@ canvas{display:block;width:100%;height:auto;border-radius:6px}
           <button class="btn btn-g btn-sm" onclick="tf('mnq','point')">+ Puntual</button>
           <button class="btn btn-g btn-sm" onclick="tf('mnq','dist')">+ Distribuida</button>
           <button class="btn btn-g btn-sm" onclick="tf('mnq','moment')">+ Momento</button>
+          <button class="btn btn-g btn-sm" onclick="tf('mnq','axial')">+ Axial</button>
+        </div>
+        <div id="mnq-fa" class="ci" style="display:none">
+          <div class="g2" style="margin-bottom:.45rem">
+            <div><label>Posición (m)</label><input type="number" id="la-pos" value="0" step="0.1" min="0"></div>
+            <div><label>Fuerza H (kN)</label><input type="number" id="la-mag" value="10" step="1"></div>
+          </div>
+          <button class="btn btn-p btn-sm" style="width:100%" onclick="addLoad('axial')">Agregar carga axial</button>
         </div>
         <div id="mnq-fp" class="ci" style="display:none">
           <div class="g2" style="margin-bottom:.45rem">
@@ -210,7 +218,7 @@ canvas{display:block;width:100%;height:auto;border-radius:6px}
       <div class="card"><div class="slbl">Estructura con cargas</div><canvas id="cv-beam" width="700" height="160"></canvas></div>
       <div class="card"><div class="slbl">Momentos — M (kN·m)</div><canvas id="cv-M" width="700" height="130"></canvas></div>
       <div class="card"><div class="slbl">Corte — Q (kN)</div><canvas id="cv-Q" width="700" height="130"></canvas></div>
-      <div class="card"><div class="slbl">Axial — N (kN)</div><canvas id="cv-N" width="700" height="58"></canvas></div>
+      <div class="card"><div class="slbl">Axial — N (kN)</div><canvas id="cv-N" width="700" height="130"></canvas></div>
       <div id="mnq-res"></div>
     </div>
   </div>
@@ -320,7 +328,7 @@ canvas{display:block;width:100%;height:auto;border-radius:6px}
 
 <footer class="footer">
   <div class="fn">Desarrollado por Matías González T.</div>
-  <div class="fs">calq v1.5 &nbsp;·&nbsp; Calculadora Estructural para Arquitectos</div>
+  <div class="fs">calq v1.4 &nbsp;·&nbsp; Calculadora Estructural para Arquitectos</div>
   <div class="fsup">¿Te resultó útil? Podés ayudarme a seguir con otros proyectos acá:</div>
   <div class="fl">
     <a class="fa" href="https://linkedin.com/in/matiasgonzalezt/" target="_blank" rel="noopener">
@@ -362,7 +370,7 @@ function toggleTheme(){
   isDark = !isDark;
   document.getElementById('app').classList.toggle('dk', isDark);
   document.getElementById('tbtn').textContent = isDark ? 'Modo claro' : 'Modo oscuro';
-  runMNQ(); bRender();
+  runMNQ(); bRender(); drawRF();
 }
 
 /* ═══════════ TABS ═══════════ */
@@ -391,7 +399,10 @@ function selSup(side, type, el){
 
 /* ═══════════ FORM TOGGLE ═══════════ */
 function tf(pfx, type){
-  const ids = {mnq:{point:'mnq-fp',dist:'mnq-fd',moment:'mnq-fm'}, b:{point:'b-fp',dist:'b-fd',moment:'b-fm'}};
+  const ids = {
+    mnq:{point:'mnq-fp',dist:'mnq-fd',moment:'mnq-fm',axial:'mnq-fa'}, 
+    b:{point:'b-fp',dist:'b-fd',moment:'b-fm'}
+  };
   const all  = Object.values(ids[pfx]);
   const cur  = ids[pfx][type];
   
@@ -419,6 +430,8 @@ function addLoad(type){
     mnq.loads.push({type,pos,mag,id:Date.now()});
   } else if(type==='dist'){
     mnq.loads.push({type,a:+document.getElementById('ld-a').value,b:+document.getElementById('ld-b').value,qa:+document.getElementById('ld-qa').value,qb:+document.getElementById('ld-qb').value,id:Date.now()});
+  } else if(type==='axial'){
+    mnq.loads.push({type:'axial',pos:+document.getElementById('la-pos').value,mag:+document.getElementById('la-mag').value,id:Date.now()});
   } else {
     mnq.loads.push({type:'moment',pos:+document.getElementById('lm-pos').value,mag:+document.getElementById('lm-mag').value,id:Date.now()});
   }
@@ -434,7 +447,6 @@ function addBSup(){
   bld.supports.push({pos,type,id:Date.now()});
   bld.supports.sort((a,b)=>a.pos-b.pos);
   renderBSups(); 
-  renderLL('b'); 
   if(bld.supports.length >= 2) calcBuilder(); else bRender();
 }
 function removeBSup(id){ bld.supports=bld.supports.filter(s=>s.id!==id); renderBSups(); bRender(); }
@@ -458,7 +470,7 @@ function renderLL(pfx){
   const fn = pfx==='mnq' ? 'removeLoad' : 'removeBLoad';
   div.innerHTML = loads.map(l=>{
     const dot = l.type==='point'?'dp':l.type==='dist'?'dd':'dm';
-    const lbl = l.type==='point'?`Puntual ${l.mag} kN @ ${l.pos}m`:l.type==='dist'?`Distribuida ${l.qa}–${l.qb} kN/m [${l.a}–${l.b}m]`:`Momento ${l.mag} kN·m @ ${l.pos}m`;
+    const lbl = l.type==='point'?`Puntual ${l.mag} kN @ ${l.pos}m`:l.type==='dist'?`Distribuida ${l.qa}–${l.qb} kN/m [${l.a}–${l.b}m]`:l.type==='moment'?`Momento ${l.mag} kN·m @ ${l.pos}m`:`Axial ${l.mag} kN @ ${l.pos}m`;
     return `<div class="lrow"><div class="dot ${dot}"></div><span class="llbl">${lbl}</span><button class="btn btn-g btn-xs" onclick="${fn}(${l.id})">✕</button></div>`;
   }).join('');
 }
@@ -486,55 +498,65 @@ function renderBSups(){
    ══════════════════════════════════════════════════════ */
 
 /**
- * Calcula reacciones.
- * Retorna {RA, RB, MA} donde MA es el momento reactivo
- * en A (≠0 solo cuando typeA === 'fixed').
- *
- * Convención: cargas hacia abajo son positivas.
- * RA, RB son fuerzas de reacción hacia arriba (positivo = arriba).
- * MA es el momento reactivo en A (positivo = antihorario aplicado sobre la viga).
- */
-/**
- * Calcula reacciones utilizando Integración Numérica para resolver
- * isostáticos e hiperestáticos (empotrados) de forma exacta.
+ * Calcula reacciones utilizando Integración Numérica (Regla de Simpson)
+ * para resolver isostáticos e hiperestáticos (empotrados) de forma exacta.
+ * Convención: cargas hacia abajo positivas. RA/RB hacia arriba positivas.
+ * MA/MB momentos reactivos en empotramientos (antihorario = positivo).
  */
 function calcReactions(posA, posB, typeA, typeB, loads){
   // 1. Sumatoria de fuerzas y momentos de las cargas
-  let sumV = 0, sumMA = 0;
+  let sumV = 0, sumMA = 0, sumH = 0;
   loads.forEach(l => {
     if(l.type === 'point') { sumV += l.mag; sumMA += l.mag * (l.pos - posA); }
-    else if(l.type === 'dist') {
+    else if(l.type === 'dist') { 
       const len = l.b - l.a; const F = (l.qa + l.qb) / 2 * len;
       const t = (l.qa + l.qb) === 0 ? 0.5 : (l.qa + 2*l.qb) / (3*(l.qa + l.qb));
       sumV += F; sumMA += F * (l.a + len * t - posA);
     }
     else if(l.type === 'moment') { sumMA += l.mag; }
+    else if(l.type === 'axial') { sumH += l.mag; }
   });
 
   const span = posB - posA;
-  if(span < 1e-9) return {RA: sumV/2, RB: sumV/2, MA: 0};
+  if(span < 1e-9) return {RA: sumV/2, RB: sumV/2, MA: 0, MB: 0, HA: 0, HB: 0};
 
-  // ── NUEVO: RESOLUCIÓN PARA CANTILEVERS (EXTREMOS LIBRES) ──
+  // 2. Control de Inestabilidad Horizontal
+  let HA = 0, HB = 0;
+  const canA = (typeA === 'pin' || typeA === 'fixed');
+  const canB = (typeB === 'pin' || typeB === 'fixed');
+  
+  if (canA && !canB) { HA = -sumH; } 
+  else if (!canA && canB) { HB = -sumH; } 
+  else if (canA && canB) { HA = -sumH / 2; HB = -sumH / 2; } 
+  else if (sumH !== 0) { 
+    alert("Estructura inestable: Hay cargas axiales pero no hay apoyos articulados ni empotrados para resistirlas."); 
+    return {RA: 0, RB: 0, MA: 0, MB: 0, HA: 0, HB: 0}; // Ahora sí frena el cálculo
+  }
+
+  // 3. Control de Voladizos y Extremos Libres
   if (typeA === 'free' || typeB === 'free') {
     if (typeA === 'fixed' && typeB === 'free') {
-      // Empotrado a la izquierda, libre a la derecha
-      return {RA: sumV, RB: 0, MA: -sumMA, MB: 0};
+      return {RA: sumV, RB: 0, MA: -sumMA, MB: 0, HA: -sumH, HB: 0};
     } 
     else if (typeA === 'free' && typeB === 'fixed') {
-      // Libre a la izquierda, empotrado a la derecha
-      return {RA: 0, RB: sumV, MA: 0, MB: sumMA - sumV * span}; 
+      let sumMB = 0;
+      loads.forEach(l => {
+        if(l.type === 'point')  sumMB += l.mag * (l.pos - posB);
+        else if(l.type === 'dist'){ const len=l.b-l.a, F=(l.qa+l.qb)/2*len, t=(l.qa+l.qb)===0?0.5:(l.qa+2*l.qb)/(3*(l.qa+l.qb)); sumMB += F*((l.a+len*t)-posB); }
+        else if(l.type === 'moment') sumMB += l.mag;
+      });
+      return {RA: 0, RB: sumV, MA: 0, MB: -sumMB, HA: 0, HB: -sumH};
     } 
     else {
-      alert("⚠️ Estructura inestable: Un extremo 'Libre' requiere que el otro sea 'Empotrado'.");
-      return {RA: 0, RB: 0, MA: 0, MB: 0};
+      alert("Estructura inestable: Un extremo 'Libre' requiere que el otro sea 'Empotrado'. La estructura no puede estar en equilibrio.");
+      return {RA: 0, RB: 0, MA: 0, MB: 0, HA: 0, HB: 0}; // El return corregido para no tirar error
     }
   }
 
-  // 2. Calculamos reacciones como si fuera una viga simplemente apoyada
+  // 4. Integración Numérica (M0 y Simpson)
   let RB0 = sumMA / span;
   let RA0 = sumV - RB0;
 
-  // 3. Función del Momento Flector Isostático M0(x)
   const M0 = (x) => {
     let m = 0;
     if (x > posA) m += RA0 * (x - posA);
@@ -562,9 +584,8 @@ function calcReactions(posA, posB, typeA, typeB, loads){
     return -m;
   };
 
-  // 4. Integración Numérica (Regla de Simpson 1/3) para hallar rotaciones
   let IA = 0, IB = 0;
-  const N = 200; // Segmentos pares
+  const N = 200; 
   const dx = span / N;
   for(let i=0; i<=N; i++){
     let x = posA + i * dx;
@@ -579,27 +600,24 @@ function calcReactions(posA, posB, typeA, typeB, loads){
   let EA = -6 * IA / span;
   let EB = -6 * IB / span;
 
-  // 5. Aplicación de condiciones de contorno (Momentos de Empotramiento)
   let dMA = 0, dMB = 0;
   const fA = (typeA === 'fixed');
   const fB = (typeB === 'fixed');
 
   if (fA && !fB) {
-    dMA = EA / 2; // Apoyo A empotrado, B simple
+    dMA = EA / 2;
   } else if (!fA && fB) {
-    dMB = EB / 2; // Apoyo A simple, B empotrado
+    dMB = EB / 2;
   } else if (fA && fB) {
-    dMA = (2 * EA - EB) / 3; // Doble empotramiento
+    dMA = (2 * EA - EB) / 3;
     dMB = (2 * EB - EA) / 3;
   }
 
-  // 6. Cálculo de reacciones finales
-      let RA = RA0 - (dMA - dMB) / span;
-      let RB = RB0 + (dMA - dMB) / span;
-      
-      // Devolvemos ambos momentos de empotramiento
-      return {RA, RB, MA: dMA, MB: -dMB}; 
-    }
+  let RA = RA0 - (dMA - dMB) / span;
+  let RB = RB0 + (dMA - dMB) / span;
+  
+  return {RA, RB, MA: dMA, MB: -dMB, HA, HB}; 
+}
 
 /**
  * Construye Q(x) y M(x) en coordenadas globales 0..L.
@@ -607,7 +625,7 @@ function calcReactions(posA, posB, typeA, typeB, loads){
  * (x=0), sumando contribuciones de reacciones y cargas.
  * MA: momento reactivo en posA (empotrado A). Si A es libre, MA=0.
  */
-function buildQM(L, posA, posB, RA, RB, MA, loads){
+function buildQM(L, posA, posB, RA, RB, MA, MB, HA, HB, loads){
   // 1. Recopilamos todos los puntos donde ocurren saltos (apoyos y cargas)
   let cps = [0, L, posA, posB];
   loads.forEach(l => {
@@ -617,8 +635,8 @@ function buildQM(L, posA, posB, RA, RB, MA, loads){
 
   // 2. Creamos la cuadrícula base
   let xs = [];
-  const N = 500;
-  for(let i=0; i<=N; i++) xs.push(i * L / N);
+  const gridSize = 500;
+  for(let i=0; i<=gridSize; i++) xs.push(i * L / gridSize);
 
   // 3. Inyectamos puntos microscópicos antes y después de cada punto crítico
   cps.forEach(cp => {
@@ -648,17 +666,18 @@ function buildQM(L, posA, posB, RA, RB, MA, loads){
         }
       }
     });
-    return q; // Mantenemos tu signo invertido para la convención gráfica
+    return q;
   });
 
   // M(x): momento acumulado desde la izquierda
-  // M(posA) incluye el momento reactivo MA (positivo = antihorario sobre la viga)
   const M = xs.map(x => {
     let m = 0;
     // Momento reactivo de empotramiento en A (si aplica)
     if(x >= posA) m += MA;
     // Momentos de las reacciones verticales
     if(x > posA) m += RA * (x - posA);
+    // Momento reactivo de empotramiento en B (si aplica)
+    if(x >= posB) m += MB;
     if(x > posB) m += RB * (x - posB);
     // Momentos de las cargas externas
     loads.forEach(l => {
@@ -684,27 +703,39 @@ function buildQM(L, posA, posB, RA, RB, MA, loads){
     return m;
   });
 
-  return {xs, Q, M};
+  // N(x): diagrama de fuerza axial
+  // Convención: tracción positiva (flecha apunta hacia fuera del elemento)
+  const N = xs.map(x => {
+    let n = 0;
+    if(x >= posA) n += HA;
+    if(x >= posB) n += HB;
+    loads.forEach(l => {
+      if(l.type === 'axial' && x > l.pos) n += l.mag;
+    });
+    return n;
+  });
+
+  // Retornamos también la N
+  return {xs, Q, M, N};
 }
 
 /* ═══════════ RUN MNQ (Panel 1) ═══════════ */
 function runMNQ(){
   const L = +document.getElementById('vL').value || 6;
   const posA = 0, posB = L;
-  const {RA, RB, MA, MB} = calcReactions(posA, posB, mnq.supA, mnq.supB, mnq.loads);
-  const {xs, Q, M}   = buildQM(L, posA, posB, RA, RB, MA, mnq.loads);
+  
+  const {RA, RB, MA, MB, HA, HB} = calcReactions(posA, posB, mnq.supA, mnq.supB, mnq.loads);
+  const {xs, Q, M, N} = buildQM(L, posA, posB, RA, RB, MA, MB, HA, HB, mnq.loads);
 
-  // Usamos la propiedad M_r para mandar tanto MA como MB al graficador
-  drawBeamCV('cv-beam', L, [{pos:posA, type:mnq.supA, R:RA, M_r:MA}, {pos:posB, type:mnq.supB, R:RB, M_r:MB}], mnq.loads);
+  drawBeamCV('cv-beam', L,
+    [{pos:posA, type:mnq.supA, R:RA, M_r:MA, HA: (mnq.supA==='pin'||mnq.supA==='fixed') ? HA : 0},
+     {pos:posB, type:mnq.supB, R:RB, M_r:MB, HA: (mnq.supB==='pin'||mnq.supB==='fixed') ? HB : 0}],
+    mnq.loads);
   drawDiag('cv-M', xs, M, C().ac, L);
   drawDiag('cv-Q', xs, Q, C().gn, L);
-
-  const cvN = document.getElementById('cv-N');
-  const {W:wN, H:hN} = fixDPI(cvN);
-  const ctxN = cvN.getContext('2d');
-  ctxN.clearRect(0,0,wN,hN);
-  ctxN.font='12px Archivo,sans-serif'; ctxN.fillStyle=C().ink3; ctxN.textAlign='center';
-  ctxN.fillText('N = 0.00 kN  —  sin carga axial en esta configuración', wN/2, hN/2+5);
+  
+  // ¡El gran momento! Dibujamos el diagrama axial en naranja:
+  drawDiag('cv-N', xs, N, C().am, L);
 
   const Mx=Math.max(...M), Mn=Math.min(...M), Qx=Math.max(...Q), Qn=Math.min(...Q);
   document.getElementById('mnq-res').innerHTML = resCards(RA, RB, posA, posB, Mx, Mn, Qx, Qn, MA, MB);
@@ -717,7 +748,7 @@ function bRender(){
   ctx.clearRect(0,0,W,H);
   const pl=54,pr=54,pt=42,pb=52, cw=W-pl-pr, y0=pt+22;
   const xOf = x => pl+(x/L)*cw;
-  const SCOL={simple:Cl.gn, pin:Cl.ac, fixed:Cl.rd};
+  const SCOL={simple:Cl.gn, pin:Cl.ac, fixed:Cl.rd, free:Cl.ink3};
 
   // Beam
   ctx.strokeStyle=Cl.ink; ctx.lineWidth=4;
@@ -734,7 +765,6 @@ function bRender(){
   for(let i=0;i<=seg;i++){
     const fx=pl+(i/seg)*cw;
     ctx.strokeStyle=Cl.br; ctx.lineWidth=.8;
-    // ctx.beginPath(); ctx.moveTo(fx,y0-3); ctx.lineTo(fx,y0+3); ctx.stroke();
     ctx.font='12px DM Mono,monospace'; ctx.fillStyle=Cl.ink3; ctx.textAlign='center';
     ctx.fillText((i*L/seg).toFixed(1),fx,y0+148);
   }
@@ -746,6 +776,7 @@ function bRender(){
     if(s.type==='simple'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-11,y0+18);ctx.lineTo(tx+11,y0+18);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(tx-14,y0+22);ctx.lineTo(tx+14,y0+22);ctx.stroke();}
     else if(s.type==='pin'){ctx.beginPath();ctx.moveTo(tx,y0);ctx.lineTo(tx-10,y0+16);ctx.lineTo(tx+10,y0+16);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.arc(tx,y0+22,2.5,0,Math.PI*2);ctx.stroke();}
     else if(s.type==='fixed'){ctx.globalAlpha=.22;ctx.fillRect(tx-5,y0-12,9,24);ctx.globalAlpha=1;ctx.strokeRect(tx-5,y0-12,9,24);}
+    else if(s.type==='free'){ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(tx-14,y0);ctx.lineTo(tx+14,y0);ctx.stroke();ctx.setLineDash([]);}
     ctx.font='bold 12px DM Mono,monospace'; ctx.textAlign='center';
     ctx.fillText(s.pos.toFixed(1)+'m', tx, y0+36);
     ctx.restore();
@@ -765,7 +796,6 @@ function bRender(){
       ctx.save(); ctx.strokeStyle=Cl2.ac; ctx.fillStyle=Cl2.ac+'22'; ctx.lineWidth=1.1;
       ctx.beginPath();ctx.moveTo(ax,y0-sA);ctx.lineTo(bx,y0-sB);ctx.lineTo(bx,y0);ctx.lineTo(ax,y0);ctx.closePath();ctx.fill();ctx.stroke();
       const steps=Math.max(2,Math.floor((bx-ax)/16));
-      // for(let i=0;i<=steps;i++){arw(ctx,ax+i*(bx-ax)/steps,y0-(sA+(sB-sA)*i/steps)+1,ax+i*(bx-ax)/steps,y0-1,Cl2.ac,3,1);}
       ctx.restore();
     } else {
       const tx=xOf(l.pos); ctx.save(); ctx.strokeStyle=Cl2.am; ctx.lineWidth=2.2;
@@ -783,18 +813,19 @@ function calcBuilder(){
   const posA = sA.pos, posB = sB.pos;
   if(Math.abs(posB - posA) < 0.01) return alert('Los apoyos extremos deben estar en posiciones distintas');
 
-  const {RA, RB, MA, MB} = calcReactions(posA, posB, sA.type, sB.type, bld.loads);
-  const {xs, Q, M}   = buildQM(L, posA, posB, RA, RB, MA, bld.loads);
+  const {RA, RB, MA, MB, HA, HB} = calcReactions(posA, posB, sA.type, sB.type, bld.loads);
+  const {xs, Q, M, N} = buildQM(L, posA, posB, RA, RB, MA, MB, HA, HB, bld.loads);
 
   drawDiag('cv-bM', xs, M, C().ac, L);
   drawDiag('cv-bQ', xs, Q, C().gn, L);
 
-  // Redibujar viga con reacciones superpuestas (sin borrar el Canvas)
+  // Redibujar viga con reacciones superpuestas
   bRender();
+  
   const cv  = document.getElementById('cv-bld');
   const ctx = cv.getContext('2d');
   
-  // Constantes de dibujo restauradas para que no falle
+  // Usamos clientWidth directo para no borrar el canvas con fixDPI
   const pl = 54, pr = 54, pt = 42;
   const cw = cv.clientWidth - pl - pr; 
   const y0 = pt + 22;
@@ -857,6 +888,25 @@ function calcBuilder(){
       
       ctx.restore();
     }
+  });
+
+  // Reacciones horizontales (solo pin y fixed)
+  [[posA, HA, sA.type], [posB, HB, sB.type]].forEach(([xp, H_r, type]) => {
+    if((type !== 'pin' && type !== 'fixed') || Math.abs(H_r) < 0.001) return;
+    const tx = xOf(xp);
+    const al = 28;
+    const hx1 = H_r >= 0 ? tx - al : tx + al;
+    
+    // Creamos una nueva altura "hy" sumándole 30 píxeles a la viga (y0)
+    const hy = y0 + 30; 
+    
+    arw(ctx, hx1, hy, tx, hy, C().am, 5.5, 2);
+    ctx.font = 'bold 11px DM Mono,monospace';
+    ctx.fillStyle = C().am;
+    ctx.textAlign = 'center';
+    
+    // Bajamos el texto un poco más (hy + 14) para que quede debajo de la flecha
+    ctx.fillText('H='+H_r.toFixed(2)+'kN', (hx1+tx)/2, hy + 24);
   });
 
   // Generar las tarjetas de resultados
@@ -991,16 +1041,17 @@ function drawDiag(id, xs, vals, color, L){
   ctx.fillText((isM ? '+' : '−') + maxV.toFixed(2), pl-4, pt+ch+2); 
 
   // Etiquetas del Eje X
+  ctx.textAlign = 'center';
   [0,.25,.5,.75,1].forEach(t=> ctx.fillText((t*L).toFixed(1)+'m', pl+t*cw, H-3));
 }
 
 function drawBeamCV(id, L, supports, loads){
   const cv=document.getElementById(id); if(!cv) return;
-  const {W, H} = fixDPI(cv); const ctx = cv.getContext('2d'); const Cl = C();0
+  const {W, H} = fixDPI(cv); const ctx = cv.getContext('2d'); const Cl = C();
   ctx.clearRect(0,0,W,H);
   const pl=54,pr=54,pt=34,pb=46, cw=W-pl-pr, y0=pt+24;
   const xOf = x => pl+(x/L)*cw;
-  const SCOL={simple:Cl.gn, pin:Cl.ac, fixed:Cl.rd};
+  const SCOL={simple:Cl.gn, pin:Cl.ac, fixed:Cl.rd, free:Cl.ink3};
 
   // Viga
   ctx.strokeStyle=Cl.ink; ctx.lineWidth=4;
@@ -1069,11 +1120,19 @@ function drawBeamCV(id, L, supports, loads){
       
       ctx.restore();
     }
-    ctx.restore(); // ¡Este cierra el dibujo general del apoyo!
+    // cierre del forEach de supports
   });
-  // Cargas
-  const maxMag=Math.max(...loads.map(l=>l.type==='point'?Math.abs(l.mag):l.type==='dist'?Math.max(Math.abs(l.qa||0),Math.abs(l.qb||0)):Math.abs(l.mag||0)),1);
-  loads.forEach(l=>{
+  // Cargas — incluyendo axiales como flechas horizontales
+  const vertLoads = loads.filter(l => l.type !== 'axial');
+  const axialLoads = loads.filter(l => l.type === 'axial');
+  const maxMag = Math.max(
+    ...vertLoads.map(l=>l.type==='point'?Math.abs(l.mag):l.type==='dist'?Math.max(Math.abs(l.qa||0),Math.abs(l.qb||0)):Math.abs(l.mag||0)),
+    ...axialLoads.map(l=>Math.abs(l.mag)),
+    1
+  );
+
+  // Cargas verticales y de momento
+  vertLoads.forEach(l=>{
     if(l.type==='point'){
       const tx=xOf(l.pos), al=Math.max(18,Math.abs(l.mag)/maxMag*30);
       arw(ctx,tx,y0-al,tx,y0-1,Cl.ac);
@@ -1087,12 +1146,41 @@ function drawBeamCV(id, L, supports, loads){
       ctx.fillText(l.qa.toFixed(1)+'kN/m',ax,y0-sA-5);
       if(Math.abs(l.qb-l.qa)>.01) ctx.fillText(l.qb.toFixed(1)+'kN/m',bx,y0-sB-5);
       ctx.restore();
-    } else {
+    } else if(l.type==='moment'){
       const tx=xOf(l.pos); ctx.save(); ctx.strokeStyle=Cl.am; ctx.lineWidth=2.2;
       ctx.beginPath(); ctx.arc(tx,y0,11,-Math.PI*.8,Math.PI*.8,l.mag<0); ctx.stroke(); ctx.restore();
     }
   });
-}
+
+  // Cargas axiales — flechas horizontales sobre la viga
+  // Convención: positivo = tracción (apunta hacia afuera del elemento) → flecha apunta hacia la derecha
+  axialLoads.forEach(l=>{
+    const tx = xOf(l.pos);
+    const al = Math.max(22, Math.abs(l.mag)/maxMag*36);
+    // Tracción (+): flecha apunta a la derecha. Compresión (-): a la izquierda.
+    const x1 = l.mag >= 0 ? tx - al : tx + al;
+    const x2 = l.mag >= 0 ? tx      : tx;
+    arw(ctx, x1, y0, x2, y0, Cl.am);
+    ctx.font='bold 11px DM Mono,monospace'; ctx.fillStyle=Cl.am; ctx.textAlign='center';
+    ctx.fillText(l.mag.toFixed(1)+'kN', (x1+x2)/2, y0-10);
+  });
+
+  // Reacciones horizontales en apoyos pin y fixed
+  supports.forEach(s=>{
+    if(s.HA === undefined || Math.abs(s.HA) < 0.001) return;
+    const tx = xOf(s.pos);
+    const al = 28;
+    const hx1 = s.HA >= 0 ? tx - al : tx + al;
+    
+    const hy = y0 + 32; // La misma altura que en el constructor
+    
+    arw(ctx, hx1, hy, tx, hy, Cl.am, 5.5, 2);
+    ctx.font='bold 11px DM Mono,monospace'; 
+    ctx.fillStyle=Cl.am; 
+    ctx.textAlign='center';
+    ctx.fillText('H='+s.HA.toFixed(2)+'kN', (hx1+tx)/2, hy + 14);
+  });
+} // end drawBeamCV
 
 function resCards(RA, RB, posA, posB, Mx, Mn, Qx, Qn, MA, MB){
   const maCard = (MA !== undefined && Math.abs(MA) > 0.001)
